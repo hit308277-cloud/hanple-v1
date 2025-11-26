@@ -1,318 +1,46 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
+/* 전체 화면 자동 확장 */
+html, body, #root {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f3f4f6;
-  color: #111827;
-}
-
-.app-root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 0.75rem 1.25rem;
-}
-
-.logo {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-
-.logo-mark {
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  font-size: 0.9rem;
-}
-
-.logo-sub {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-.app-main {
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
+  padding: 0;
   width: 100%;
-}
-
-.tabs {
-  display: inline-flex;
-  border-radius: 999px;
-  background: #e5e7eb;
-  padding: 0.25rem;
-  margin-bottom: 1rem;
-}
-
-.tab {
-  border: none;
-  padding: 0.4rem 1.1rem;
-  border-radius: 999px;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #4b5563;
-}
-
-.tab-active {
-  background: white;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
-  color: #111827;
-}
-
-.tab-panel {
-  background: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-  min-height: 400px;
-}
-
-/* Calendar */
-
-.calendar-root {
-  display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);
-  gap: 1rem;
-}
-
-@media (max-width: 900px) {
-  .calendar-root {
-    grid-template-columns: 1fr;
-  }
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.calendar-header button {
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-}
-
-.calendar-title {
-  font-weight: 600;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  height: 100%;
   overflow: hidden;
 }
 
-.calendar-dayname {
-  background: #f9fafb;
-  padding: 0.45rem 0.3rem;
-  text-align: center;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.calendar-cell {
-  height: 60px;
-  border: none;
-  border-top: 1px solid #f3f4f6;
-  border-right: 1px solid #f3f4f6;
-  background: white;
-  text-align: right;
-  padding: 0.35rem 0.35rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.calendar-cell:nth-child(7n) {
-  border-right: none;
-}
-
-.calendar-cell:disabled {
-  background: #f9fafb;
-  cursor: default;
-}
-
-.calendar-today {
-  border: 1px solid #2563eb;
-}
-
-.calendar-selected {
-  background: #eff6ff;
-}
-
-.calendar-side {
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  padding: 0.75rem 0.9rem;
-  font-size: 0.9rem;
-}
-
-.calendar-side h3 {
-  margin-top: 0;
-  font-size: 0.95rem;
-}
-
-.calendar-legend {
-  margin-top: 0.75rem;
+/* 메인 컨테이너 – HTS 스타일 */
+.app-container {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 0.8rem;
-  color: #6b7280;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
 }
 
-.dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  margin-right: 0.25rem;
-}
-
-.dot.today {
-  background: #2563eb;
-}
-
-.dot.selected {
-  background: #60a5fa;
-}
-
-/* Chat */
-
-.chat-root {
-  display: flex;
-  flex-direction: column;
-  height: 480px;
-}
-
-.chat-header {
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 0.5rem;
-}
-
-.chat-sub {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 0.25rem;
+/* 왼쪽 기능 패널 */
+.left-panel {
+  width: 280px;
+  min-width: 200px;
+  max-width: 500px;
+  background: #ffffff;
+  border-right: 1px solid #ddd;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
 }
 
-.chat-message {
-  max-width: 80%;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.85rem;
-}
-
-.chat-theirs {
-  align-self: flex-start;
-}
-
-.chat-mine {
-  align-self: flex-end;
-}
-
-.chat-meta {
-  display: flex;
-  gap: 0.35rem;
-  align-items: baseline;
-  margin-bottom: 0.1rem;
-}
-
-.chat-from {
-  font-weight: 500;
-}
-
-.chat-time {
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-.chat-bubble {
-  padding: 0.45rem 0.7rem;
-  border-radius: 0.9rem;
-  background: #eff6ff;
-}
-
-.chat-mine .chat-bubble {
-  background: #2563eb;
-  color: white;
-}
-
-.chat-input {
-  display: flex;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.chat-input textarea {
+/* 오른쪽 메인창 */
+.main-panel {
   flex: 1;
-  resize: none;
-  min-height: 60px;
-  max-height: 100px;
-  padding: 0.4rem 0.5rem;
-  font-family: inherit;
-  font-size: 0.85rem;
+  background: #fff;
+  overflow-y: auto;
+  padding: 20px;
 }
 
-.chat-input button {
-  border-radius: 0.6rem;
-  border: none;
-  padding: 0 1rem;
-  font-size: 0.85rem;
-  background: #111827;
+/* HTS 스타일 토글 버튼 */
+.toggle-btn {
+  background: #0077ff;
   color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-}
-
-/* Placeholder */
-
-.placeholder h2 {
-  margin-top: 0;
-}
-
-.placeholder ul {
-  padding-left: 1.1rem;
-  font-size: 0.9rem;
-}
-
-/* Footer */
-
-.app-footer {
-  padding: 0.75rem 1rem 1rem;
-  font-size: 0.8rem;
-  color: #6b7280;
-  text-align: center;
+  font-size: 14px;
+  margin: 10px;
 }
