@@ -7,6 +7,7 @@ import WorkDoneView from "./WorkDoneView.jsx";
 import ContractsView from "./ContractsView.jsx";
 import WarehouseView from "./WarehouseView.jsx";
 import CompanyView from "./CompanyView.jsx";
+import LedgerView from "./LedgerView.jsx";
 
 function App() {
   const [activeMenu, setActiveMenu] = useState("calendar");
@@ -15,7 +16,7 @@ function App() {
   const [jobs, setJobs] = useState([]);          // 일정 / 시공완료 / 정산
   const [estimates, setEstimates] = useState([]); // 견적 / 계약
   const [inventory, setInventory] = useState({
-    products: [], // 제품 마스터
+    products: [],  // 제품 마스터
     movements: [], // 입·출고 내역
   });
 
@@ -42,11 +43,14 @@ function App() {
         warehouse: true,
         contract: true,
         chat: true,
-        blogWrite: true,   // 블로그 작성(머리)
-        blogApprove: true, // 블로그 승인/게시 권한
+        blogWrite: true,   // 블로그 작성
+        blogApprove: true, // 블로그 승인
       },
     },
   ]);
+
+  // STO 원장(토큰 기록)
+  const [ledgerItems, setLedgerItems] = useState([]);
 
   return (
     <div className="app-root">
@@ -108,6 +112,12 @@ function App() {
             💰 정산
           </button>
           <button
+            className={activeMenu === "ledger" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setActiveMenu("ledger")}
+          >
+            📊 STO 기록(원장)
+          </button>
+          <button
             className={activeMenu === "settings" ? "nav-btn active" : "nav-btn"}
             onClick={() => setActiveMenu("settings")}
           >
@@ -153,6 +163,13 @@ function App() {
 
           {activeMenu === "settlement" && (
             <SettlementView jobs={jobs} setJobs={setJobs} />
+          )}
+
+          {activeMenu === "ledger" && (
+            <LedgerView
+              ledgerItems={ledgerItems}
+              setLedgerItems={setLedgerItems}
+            />
           )}
 
           {activeMenu === "settings" && (
