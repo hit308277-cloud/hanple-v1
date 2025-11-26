@@ -1,82 +1,73 @@
-import React, { useState } from 'react'
+// src/TaskChat.jsx
+import React, { useState } from "react";
+
+const dummyRooms = [
+  {
+    id: 1,
+    name: "한성 설치팀 단톡방",
+    lastMessage: "내일 천안 현장 9시 출발입니다.",
+  },
+  {
+    id: 2,
+    name: "중앙 도매+설치 일정방",
+    lastMessage: "12월 물량 발주 체크해주세요.",
+  },
+];
 
 export default function TaskChat() {
-  const [input, setInput] = useState('')
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      from: '고객',
-      text: '천안 두정동 33평 아파트 시스템에어컨 견적 부탁드립니다.',
-      time: '09:12'
-    },
-    {
-      id: 2,
-      from: '상담',
-      text: '안녕하세요, 한성시스템에어컨입니다. 실내기 4대 기준으로 대략 350~420만 원 정도 예상됩니다.',
-      time: '09:13'
-    }
-  ])
-
-  const handleSend = () => {
-    const text = input.trim()
-    if (!text) return
-    setMessages(prev => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        from: '상담',
-        text,
-        time: new Date().toTimeString().slice(0, 5)
-      }
-    ])
-    setInput('')
-  }
-
-  const handleKeyDown = e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+  const [activeRoom, setActiveRoom] = useState(dummyRooms[0]);
 
   return (
-    <div className="chat-root">
-      <div className="chat-header">
-        <div>
-          <strong>업무톡 – 한성시스템에어컨</strong>
-          <div className="chat-sub">
-            카카오톡 대신 한플 안에서 상담 내용을 정리하는 공간입니다.
+    <div className="chat-layout">
+      <section className="chat-left">
+        <h3 className="panel-title">한톡(업무톡) 방 목록</h3>
+        <p className="right-panel-help">
+          카톡처럼 방을 나누어 관리하는 영역입니다.  
+          나중에 실제 카카오톡/문자/전화와 연동할 수 있는 구조로 설계할 수 있습니다.
+        </p>
+
+        <ul className="site-list">
+          {dummyRooms.map((room) => (
+            <li
+              key={room.id}
+              className={
+                "site-list-item" +
+                (activeRoom && activeRoom.id === room.id
+                  ? " site-list-item-active"
+                  : "")
+              }
+              onClick={() => setActiveRoom(room)}
+            >
+              <div className="site-title">{room.name}</div>
+              <div className="site-sub">{room.lastMessage}</div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="chat-right">
+        <h3 className="panel-title">
+          {activeRoom ? activeRoom.name : "대화방 선택"}
+        </h3>
+        <div className="chat-window">
+          <div className="chat-message chat-message-me">
+            예시) 소비자 견적 문의 내용
+          </div>
+          <div className="chat-message chat-message-other">
+            예시) 한플 ERP 자동 견적 답변
           </div>
         </div>
-      </div>
-
-      <div className="chat-messages">
-        {messages.map(m => (
-          <div
-            key={m.id}
-            className={
-              'chat-message ' +
-              (m.from === '상담' ? 'chat-mine' : 'chat-theirs')
-            }
-          >
-            <div className="chat-meta">
-              <span className="chat-from">{m.from}</span>
-              <span className="chat-time">{m.time}</span>
-            </div>
-            <div className="chat-bubble">{m.text}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="chat-input">
-        <textarea
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="여기에 상담 내용을 입력하세요. (Enter: 전송, Shift+Enter: 줄바꿈)"
-        />
-        <button onClick={handleSend}>전송</button>
-      </div>
+        <div className="chat-input-row">
+          <input
+            className="form-input"
+            placeholder="여기에 메시지 입력 (지금은 예시 화면)"
+            disabled
+          />
+          <button className="primary-btn" disabled>
+            전송
+          </button>
+        </div>
+      </section>
     </div>
-  )
+  );
 }
