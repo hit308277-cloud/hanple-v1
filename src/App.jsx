@@ -6,6 +6,7 @@ import SettlementView from "./SettlementView.jsx";
 import WorkDoneView from "./WorkDoneView.jsx";
 import ContractsView from "./ContractsView.jsx";
 import WarehouseView from "./WarehouseView.jsx";
+import CompanyView from "./CompanyView.jsx";
 
 function App() {
   const [activeMenu, setActiveMenu] = useState("calendar");
@@ -18,6 +19,35 @@ function App() {
     movements: [], // 입·출고 내역
   });
 
+  // 회사 / 직원 / 권한
+  const [company, setCompany] = useState({
+    name: "한성시스템에어컨(주)",
+    bizNo: "",
+    owner: "정성권",
+    industry: "시스템에어컨 / 설비",
+    address: "",
+    plan: "무료", // 무료 / 유료-베이직 / 유료-프로
+  });
+
+  const [employees, setEmployees] = useState([
+    {
+      id: 1,
+      name: "관리자",
+      role: "대표",
+      status: "재직", // 재직 / 퇴사
+      permissions: {
+        calendar: true,
+        workdone: true,
+        settlement: true,
+        warehouse: true,
+        contract: true,
+        chat: true,
+        blogWrite: true,   // 블로그 작성(머리)
+        blogApprove: true, // 블로그 승인/게시 권한
+      },
+    },
+  ]);
+
   return (
     <div className="app-root">
       {/* 상단 헤더 */}
@@ -27,7 +57,7 @@ function App() {
           <span className="logo-sub">ERP v1.0</span>
         </div>
         <div className="app-header-right">
-          <span className="app-company">한성시스템에어컨(주)</span>
+          <span className="app-company">{company.name}</span>
           <span className="app-user">관리자</span>
         </div>
       </header>
@@ -64,6 +94,12 @@ function App() {
             onClick={() => setActiveMenu("warehouse")}
           >
             📦 창고 / 재고
+          </button>
+          <button
+            className={activeMenu === "company" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setActiveMenu("company")}
+          >
+            🏢 회사 / 직원·권한
           </button>
           <button
             className={activeMenu === "settlement" ? "nav-btn active" : "nav-btn"}
@@ -104,6 +140,15 @@ function App() {
 
           {activeMenu === "warehouse" && (
             <WarehouseView inventory={inventory} setInventory={setInventory} />
+          )}
+
+          {activeMenu === "company" && (
+            <CompanyView
+              company={company}
+              setCompany={setCompany}
+              employees={employees}
+              setEmployees={setEmployees}
+            />
           )}
 
           {activeMenu === "settlement" && (
