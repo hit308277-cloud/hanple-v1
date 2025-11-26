@@ -1,149 +1,124 @@
-// src/CalendarView.jsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-// YYYY-MM-DD → Date
-function parseDate(str) {
-  const [y, m, d] = str.split("-").map(Number);
-  return new Date(y, m - 1, d);
+function buildMonth(year, month) {
+  // month: 0~11
+  const first = new Date(year, month, 1);
+  const firstDay = first.getDay(); // 0:일
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const weeks = [];
+  let currentDay = 1 - firstDay; // 첫 주 시작
+
+  while (currentDay <= daysInMonth) {
+    const week = [];
+    for (let i = 0; i < 7; i++) {
+      if (currentDay < 1 || currentDay > daysInMonth) {
+        week.push(null);
+      } else {
+        week.push(currentDay);
+      }
+      currentDay++;
+    }
+    weeks.push(week);
+  }
+
+  return weeks;
 }
 
-function formatDate(y, m, d) {
-  const mm = String(m + 1).padStart(2, "0");
-  const dd = String(d).padStart(2, "0");
-  return `${y}-${mm}-${dd}`;
+function formatKey(year, month, day) {
+  const m = String(month + 1).padStart(2, "0");
+  const d = String(day).padStart(2, "0");
+  return `${year}-${m}-${d}`;
 }
 
-function getDaysInMonth(year, month) {
-  return new Date(year, month + 1, 0).getDate();
-}
+export default function CalendarView({ selectedDate, onSelectDate, jobsByDate }) {
+  const [year, month] = selectedDate.split("-").map((v, i) => (i === 1 ? Number(v) - 1 : Number(v)));
+  const currentYear = year;
+  const currentMonth = month;
 
-export default function CalendarView({
-  selectedDate,
-  jobs,
-  onChangeDate,
-  onSelectJob,
-}) {
-  const baseDate = parseDate(selectedDate);
-  const [viewYear, setViewYear] = useState(baseDate.getFullYear());
-  const [viewMonth, setViewMonth] = useState(baseDate.getMonth());
-
-  // 날짜 바뀌면 달력 월도 맞춰주기
-  useEffect(() => {
-    const d = parseDate(selectedDate);
-    setViewYear(d.getFullYear());
-    setViewMonth(d.getMonth());
-  }, [selectedDate]);
-
-  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
-  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=일요일
+  const weeks = buildMonth(currentYear, currentMonth);
 
   const handlePrevMonth = () => {
-    const newMonth = viewMonth === 0 ? 11 : viewMonth - 1;
-    const newYear = viewMonth === 0 ? viewYear - 1 : viewYear;
-    setViewYear(newYear);
-    setViewMonth(newMonth);
-    // 날짜도 첫째 날로 이동
-    onChangeDate(formatDate(newYear, newMonth, 1));
+    const prev = new Date(currentYear, currentMonth - 1, 1);
+    const y = prev.getFullYear();
+    const m = String(prev.getMonth() + 1).padStart(2, "0");
+    const d = "01";
+    onSelectDate(`${y}-${m}-${d}`);
   };
 
   const handleNextMonth = () => {
-    const newMonth = viewMonth === 11 ? 0 : viewMonth + 1;
-    const newYear = viewMonth === 11 ? viewYear + 1 : viewYear;
-    setViewYear(newYear);
-    setViewMonth(newMonth);
-    onChangeDate(formatDate(newYear, newMonth, 1));
+    const next = new Date(currentYear, currentMonth + 1, 1);
+    const y = next.getFullYear();
+    const m = String(next.getMonth() + 1).padStart(2, "0");
+    const d = "01";
+    onSelectDate(`${y}-${m}-${d}`);
   };
 
-  const selected = parseDate(selectedDate);
-
-  const cells = [];
-  // 앞쪽 빈칸
-  for (let i = 0; i < firstDay; i++) {
-    cells.push(<div key={`empty-${i}`} className="cal-cell cal-empty" />);
-  }
-  // 날짜 칸
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isSelected =
-      selected.getFullYear() === viewYear &&
-      selected.getMonth() === viewMonth &&
-      selected.getDate() === d;
-
-    const dateStr = formatDate(viewYear, viewMonth, d);
-
-    cells.push(
-      <button
-        key={d}
-        className={
-          "cal-cell cal-day" + (isSelected ? " cal-day-selected" : "")
-        }
-        onClick={() => onChangeDate(dateStr)}
-      >
-        {d}
-      </button>
-    );
-  }
-
-  // 요일
-  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const [selYear, selMonth, selDay] = selectedDate.split("-").map(Number);
 
   return (
-    <div className="left-panel">
-      <h1 className="app-title">HANPLE ERP</h1>
-      <p className="app-subtitle">달력 · 현장 선택 (카톡 방 목록 역할)</p>
-
-      <div className="calendar-card">
-        <div className="calendar-header">
-          <button onClick={handlePrevMonth}>&lt;</button>
-          <span>
-            {viewYear}년 {viewMonth + 1}월
-          </span>
-          <button onClick={handleNextMonth}>&gt;</button>
+    <div className="calendar-wrapper">
+      <div className="calendar-header">
+        <button className="cal-nav-btn" onClick={handlePrevMonth}>
+          ◀
+        </button>
+        <div className="calendar-title">
+          {currentYear}년 {currentMonth + 1}월
         </div>
-
-        <div className="calendar-weekdays">
-          {weekdays.map((w) => (
-            <div key={w} className="cal-cell cal-weekday">
-              {w}
-            </div>
-          ))}
-        </div>
-
-        <div className="calendar-grid">{cells}</div>
+        <button className="cal-nav-btn" onClick={handleNextMonth}>
+          ▶
+        </button>
       </div>
 
-      <div className="job-list-wrapper">
-        <div className="job-list-header">
-          <span>
-            {selectedDate.replace(/-/g, ".")} 현장 목록 ({jobs.length}건)
-          </span>
-          <span className="job-list-hint">제목을 클릭하면 오른쪽에 상세 한톡이 열립니다.</span>
-        </div>
-
-        {jobs.length === 0 ? (
-          <div className="job-list-empty">
-            아직 등록된 현장이 없습니다.  
-            오른쪽 한톡에서 새 현장을 등록하세요.
-          </div>
-        ) : (
-          <ul className="job-list">
-            {jobs.map((job) => (
-              <li key={job.id}>
-                <button
-                  className="job-list-item"
-                  onClick={() => onSelectJob(job.id)}
-                >
-                  {/* 카톡 방 이름 느낌 */}
-                  <div className="job-title-line">{job.title}</div>
-                  <div className="job-subline">
-                    머리: {job.head.toLocaleString()} / 손발:{" "}
-                    {job.hands.toLocaleString()} / 기타:{" "}
-                    {job.extra.toLocaleString()}
-                  </div>
-                </button>
-              </li>
+      <table className="calendar-table">
+        <thead>
+          <tr>
+            {["일", "월", "화", "수", "목", "금", "토"].map((d) => (
+              <th key={d}>{d}</th>
             ))}
-          </ul>
-        )}
+          </tr>
+        </thead>
+        <tbody>
+          {weeks.map((week, wi) => (
+            <tr key={wi}>
+              {week.map((day, di) => {
+                if (!day) return <td key={di} />;
+                const key = formatKey(currentYear, currentMonth, day);
+                const hasJobs = jobsByDate[key] && jobsByDate[key].length > 0;
+                const isSelected =
+                  key ===
+                  `${selYear}-${String(selMonth).padStart(2, "0")}-${String(selDay).padStart(
+                    2,
+                    "0"
+                  )}`;
+
+                return (
+                  <td key={di}>
+                    <button
+                      className={`calendar-day-btn ${
+                        isSelected ? "day-selected" : ""
+                      } ${hasJobs ? "day-has-job" : ""}`}
+                      onClick={() => onSelectDate(key)}
+                    >
+                      <span>{day}</span>
+                      {hasJobs && <span className="day-dot" />}
+                    </button>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="calendar-footer">
+        선택된 날짜:{" "}
+        <strong>
+          {selYear}년 {selMonth}월 {selDay}일
+        </strong>
+        <br />
+        이 날짜의 현장 수:{" "}
+        <strong>{(jobsByDate[selectedDate] || []).length}건</strong>
       </div>
     </div>
   );
