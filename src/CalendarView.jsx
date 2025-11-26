@@ -1,271 +1,328 @@
 // src/CalendarView.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 
-// 오늘 날짜
-const today = new Date();
-const THIS_YEAR = today.getFullYear();
-const THIS_MONTH = today.getMonth() + 1; // 1~12
+// 🔹 샘플 데이터 (원하시면 나중에 실제 현장 데이터로 수정)
+const INITIAL_SITES = [
+  {
+    id: 1,
+    date: "2025-11-28",
+    title: "한성/미입금 엘지 천안 정대현",
+    customer: "정대현",
+    address: "천안시 두정동 푸르지오",
+    memo: "도급 160 + 도배 20 / 배관·보양 포함",
+    settlement: "제품 560만 + 공사 200만 = 760만 (미입금 160만)",
+  },
+  {
+    id: 2,
+    date: "2025-11-28",
+    title: "중앙/미입금 수원 상가",
+    customer: "상가주인 김OO",
+    address: "수원시 영통구 상가 현장",
+    memo: "공조기 설치 후 잔금 미입금. 미입금 300만.",
+    settlement: "총 1,200만 중 900만 입금, 300만 미입금",
+  },
+];
 
-// 날짜 키 생성 함수 (2025-11-28 형태)
-function makeDateKey(year, month, day) {
-  const m = String(month).padStart(2, "0");
-  const d = String(day).padStart(2, "0");
-  return `${year}-${m}-${d}`;
+function getTodayKey() {
+  const t = new Date();
+  const y = t.getFullYear();
+  const m = String(t.getMonth() + 1).padStart(2, "0");
+  const d = String(t.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
-// 한 달 달력 셀 만들기
-function buildMonth(year, month) {
-  const first = new Date(year, month - 1, 1);
-  const firstDay = first.getDay(); // 0(일)~6(토)
-  const lastDay = new Date(year, month, 0).getDate();
-
+// year: 2025, monthIndex: 0~11
+function buildMonth(year, monthIndex) {
   const cells = [];
+  const firstDay = new Date(year, monthIndex, 1).getDay(); // 0=일
+  const lastDate = new Date(year, monthIndex + 1, 0).getDate();
+
+  // 앞에 비는 칸(null)
   for (let i = 0; i < firstDay; i++) {
     cells.push(null);
   }
-  for (let d = 1; d <= lastDay; d++) {
-    cells.push({
-      label: d,
-      dateKey: makeDateKey(year, month, d),
-    });
+
+  // 실제 날짜들
+  for (let d = 1; d <= lastDate; d++) {
+    const monthNumber = monthIndex + 1;
+    const m = String(monthNumber).padStart(2, "0");
+    const dayStr = String(d).padStart(2, "0");
+    const dateKey = `${year}-${m}-${dayStr}`;
+    cells.push({ day: d, dateKey });
   }
+
   return cells;
 }
 
 export default function CalendarView() {
-  const [year] = useState(THIS_YEAR);
-  const [month] = useState(THIS_MONTH);
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [monthIndex, setMonthIndex] = useState(today.getMonth()); // 0~11
+  const [selectedDate, setSelectedDate] = useState(getTodayKey());
 
-  // 선택된 날짜, 선택된 현장
-  const [selectedDate, setSelectedDate] = useState(
-    makeDateKey(THIS_YEAR, THIS_MONTH, today.getDate())
-  );
+  // 🔹 전체 현장 목록 (날짜별로 필터해서 사용)
+  const [sites, setSites] = useState(INITIAL_SITES);
+
+  // 🔹 어떤 현장(제목)을 클릭했는지
   const [selectedSiteId, setSelectedSiteId] = useState(null);
 
-  // 날짜별 현장 정보 (일정 + 정산까지 모두 여기 들어감)
-  const [sitesByDate, setSitesByDate] = useState({
-    // 예시 데이터 1건 (원하시면 나중에 지워도 됩니다)
-    [makeDateKey(THIS_YEAR, THIS_MONTH, today.getDate())]: [
-      {
-        id: "sample-1",
-        title: "한성/미입금 엘지 천안 정대현",
-        customer: "정대현",
-        location: "천안시 두정동 푸르지오",
-        memo: "도급 160 + 도배 20 / 배관, 보양 포함",
-        settlement: "제품 560만 + 공사 200만 = 760만 (미입금 160만)",
-      },
-    ],
-  });
-
-  // 새 일정 입력용 상태 (제목 + 상세/정산 메모)
+  // 🔹 새 현장 추가용 입력값
   const [newTitle, setNewTitle] = useState("");
-  const [newDetail, setNewDetail] = useState("");
+  const [newMemo, setNewMemo] = useState("");
 
-  const monthCells = buildMonth(year, month);
-  const sitesForSelectedDate = sitesByDate[selectedDate] || [];
+  // 월 달력 셀
+  const monthCells = buildMonth(year, monthIndex);
 
+  // 선택한 날짜의 현장들
+  const sitesForSelectedDate = sites.filter(
+    (site) => site.date === selectedDate
+  );
+
+  // 선택된 현장 1개 (카톡에서 현재 채팅방 같은 개념)
   const selectedSite =
-    sitesForSelectedDate.find((site) => site.id === selectedSiteId) || null;
+    sitesForSelectedDate.find((s) => s.id === selectedSiteId) || null;
 
-  // 날짜 클릭
+  // 날짜를 바꾸면, 선택된 현장 초기화
+  useEffect(() => {
+    setSelectedSiteId(null);
+  }, [selectedDate]);
+
+  const handlePrevMonth = () => {
+    if (monthIndex === 0) {
+      setYear((y) => y - 1);
+      setMonthIndex(11);
+    } else {
+      setMonthIndex((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (monthIndex === 11) {
+      setYear((y) => y + 1);
+      setMonthIndex(0);
+    } else {
+      setMonthIndex((m) => m + 1);
+    }
+  };
+
   const handleDayClick = (cell) => {
     if (!cell) return;
     setSelectedDate(cell.dateKey);
-    // 날짜 바꾸면 우측 상세는 비워두기
-    setSelectedSiteId(null);
   };
 
-  // 새 현장 추가
   const handleAddSite = () => {
-    if (!newTitle.trim() && !newDetail.trim()) return;
+    if (!newTitle.trim() && !newMemo.trim()) return;
 
-    const id = `site-${Date.now()}`;
+    const newId = Date.now();
     const newSite = {
-      id,
+      id: newId,
+      date: selectedDate,
       title: newTitle.trim() || "제목 없는 현장",
-      // 상세 내용 안에 정산까지 모두 적는 구조
-      memo: newDetail.trim(),
+      memo: newMemo.trim(),
+      settlement: "",
     };
 
-    setSitesByDate((prev) => {
-      const list = prev[selectedDate] || [];
-      return {
-        ...prev,
-        [selectedDate]: [...list, newSite],
-      };
-    });
-
+    setSites((prev) => [...prev, newSite]);
     setNewTitle("");
-    setNewDetail("");
-    setSelectedSiteId(id); // 방금 등록한 현장을 바로 선택
+    setNewMemo("");
+    setSelectedSiteId(newId);
   };
 
+  const monthLabel = `${year}년 ${monthIndex + 1}월`;
+
   return (
-    <div className="calendar-page">
-      {/* 상단 설명 영역 */}
-      <div className="calendar-header-bar">
-        <div>
-          <strong>HANPLE ERP – 일정·현장 관리</strong>
-        </div>
-        <div className="calendar-header-sub">
-          필요 기능만 열어서 보는 HTS 스타일 화면입니다. <br />
-          왼쪽에서 날짜와 현장을 선택하면, 오른쪽에 해당 현장의 상세·정산
-          정보만 표시됩니다.
+    <div className="hp-calendar-root">
+      {/* 상단 설명 */}
+      <div className="hp-top-bar">
+        <div className="hp-top-title">HANPLE ERP – 일정·현장 관리</div>
+        <div className="hp-top-sub">
+          왼쪽은 날짜와 현장 제목 목록, 오른쪽은 선택한 현장의 상세/정산입니다.
+          <br />
+          키움증권 HTS, 카카오톡처럼{" "}
+          <strong>제목을 클릭했을 때만 상세 화면이 열리는 구조</strong>입니다.
         </div>
       </div>
 
-      <div className="calendar-layout">
-        {/* 왼쪽 : 달력 + 선택 날짜의 현장 리스트(제목만) */}
-        <div className="calendar-left">
-          <div className="month-header">
-            {year}년 {month}월
+      <div className="hp-layout">
+        {/* 🔹 왼쪽 : 달력 + 해당 날짜 현장 제목 목록 */}
+        <section className="hp-left">
+          {/* 달력 헤더 */}
+          <div className="hp-month-header">
+            <button
+              type="button"
+              className="hp-month-nav"
+              onClick={handlePrevMonth}
+            >
+              ◀
+            </button>
+            <span className="hp-month-label">{monthLabel}</span>
+            <button
+              type="button"
+              className="hp-month-nav"
+              onClick={handleNextMonth}
+            >
+              ▶
+            </button>
           </div>
 
-          <div className="month-grid">
-            <div className="month-grid-header">일</div>
-            <div className="month-grid-header">월</div>
-            <div className="month-grid-header">화</div>
-            <div className="month-grid-header">수</div>
-            <div className="month-grid-header">목</div>
-            <div className="month-grid-header">금</div>
-            <div className="month-grid-header">토</div>
+          {/* 달력 */}
+          <div className="hp-month-grid">
+            <div className="hp-month-grid-header">일</div>
+            <div className="hp-month-grid-header">월</div>
+            <div className="hp-month-grid-header">화</div>
+            <div className="hp-month-grid-header">수</div>
+            <div className="hp-month-grid-header">목</div>
+            <div className="hp-month-grid-header">금</div>
+            <div className="hp-month-grid-header">토</div>
 
             {monthCells.map((cell, idx) => {
               if (!cell) {
-                return <div key={idx} className="month-cell empty" />;
+                return <div key={idx} className="hp-day-cell hp-empty" />;
               }
 
               const isSelected = cell.dateKey === selectedDate;
-              const hasSites = (sitesByDate[cell.dateKey] || []).length > 0;
+              const hasSites = sites.some((s) => s.date === cell.dateKey);
 
               return (
                 <button
                   key={cell.dateKey}
                   type="button"
-                  className={
-                    "month-cell day" +
-                    (isSelected ? " selected" : "") +
-                    (hasSites ? " has-sites" : "")
-                  }
+                  className={[
+                    "hp-day-cell",
+                    isSelected ? "hp-day-selected" : "",
+                    hasSites ? "hp-day-has-sites" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
                   onClick={() => handleDayClick(cell)}
                 >
-                  <span>{cell.label}</span>
+                  <span className="hp-day-number">{cell.day}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="day-sites-panel">
-            <div className="day-sites-title">
-              {selectedDate} 일정 (현장 제목만 표시)
+          {/* 선택한 날짜의 현장 제목 리스트 */}
+          <div className="hp-site-list-panel">
+            <div className="hp-site-list-title">
+              {selectedDate} 현장 목록 (제목만 표시)
             </div>
 
             {sitesForSelectedDate.length === 0 && (
-              <div className="day-sites-empty">
-                아직 등록된 현장이 없습니다.
-                <br />
-                아래 입력창에 제목과 정산 내용을 적고
-                <strong> [현장 등록] </strong>
-                버튼을 눌러 등록하세요.
+              <div className="hp-site-list-empty">
+                이 날짜에는 아직 등록된 현장이 없습니다.
               </div>
             )}
 
-            {sitesForSelectedDate.map((site) => (
-              <button
-                key={site.id}
-                type="button"
-                className={
-                  "site-list-item" +
-                  (site.id === selectedSiteId ? " site-list-item-selected" : "")
-                }
-                onClick={() => setSelectedSiteId(site.id)}
-              >
-                <div className="site-list-title">{site.title}</div>
-              </button>
-            ))}
+            <ul className="hp-site-list">
+              {sitesForSelectedDate.map((site) => (
+                <li
+                  key={site.id}
+                  className={[
+                    "hp-site-item",
+                    site.id === selectedSiteId ? "hp-site-item-active" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => setSelectedSiteId(site.id)}
+                >
+                  <div className="hp-site-item-title">{site.title}</div>
+                </li>
+              ))}
+            </ul>
 
-            {/* 새 현장 입력 */}
-            <div className="new-site-form">
-              <div className="new-site-label">새 현장 추가</div>
+            {/* 새 현장 추가 폼 */}
+            <div className="hp-new-site">
+              <div className="hp-new-site-label">새 현장 추가</div>
               <input
-                className="new-site-input"
+                className="hp-new-site-input"
                 placeholder="예) 한성/미입금 엘지 천안 정대현"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
               />
               <textarea
-                className="new-site-textarea"
+                className="hp-new-site-textarea"
                 placeholder={
-                  "현장 메모, 공사 범위, 정산 내역 등을 자유롭게 입력하세요.\n예) 도급 160 + 도배 20 / 미입금 160 / 자재·보양 포함"
+                  "현장 메모, 정산 메모 등을 자유롭게 입력하세요.\n예) 도급 160 + 도배 20 / 미입금 160 / 보양 포함"
                 }
-                value={newDetail}
-                onChange={(e) => setNewDetail(e.target.value)}
+                value={newMemo}
+                onChange={(e) => setNewMemo(e.target.value)}
               />
               <button
                 type="button"
-                className="new-site-button"
+                className="hp-new-site-button"
                 onClick={handleAddSite}
               >
-                현장 등록
+                선택한 날짜에 현장 등록
               </button>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* 오른쪽 : 선택한 한 현장의 상세/정산 정보만 표시 */}
-        <div className="calendar-right">
-          <div className="site-detail-header">선택한 현장 상세 · 정산</div>
+        {/* 🔹 오른쪽 : 선택한 한 현장의 상세 / 정산만 표시 (카톡 채팅창 역할) */}
+        <section className="hp-right">
+          <div className="hp-detail-header">선택한 현장 상세 · 정산</div>
 
           {!selectedSite && (
-            <div className="site-detail-empty">
+            <div className="hp-detail-empty">
               왼쪽에서 <strong>현장 제목</strong>을 클릭하면
               <br />
-              이 영역에 해당 현장의 상세 정보와 정산 메모가 정리되어 표시됩니다.
+              이곳에 해당 현장의 상세 정보와 정산 메모가 표시됩니다.
             </div>
           )}
 
           {selectedSite && (
-            <div className="site-detail-card">
-              <div className="site-detail-title">{selectedSite.title}</div>
+            <div className="hp-detail-card">
+              <div className="hp-detail-title">{selectedSite.title}</div>
 
-              <div className="site-detail-row">
-                <span className="site-detail-label">날짜</span>
-                <span className="site-detail-value">{selectedDate}</span>
+              <div className="hp-detail-row">
+                <span className="hp-detail-label">날짜</span>
+                <span className="hp-detail-value">{selectedSite.date}</span>
               </div>
 
-              {/* 필요하면 여기에 고객명, 주소, 금액 등을 필드로 더 추가해도 됩니다. */}
               {selectedSite.customer && (
-                <div className="site-detail-row">
-                  <span className="site-detail-label">고객</span>
-                  <span className="site-detail-value">
+                <div className="hp-detail-row">
+                  <span className="hp-detail-label">고객</span>
+                  <span className="hp-detail-value">
                     {selectedSite.customer}
                   </span>
                 </div>
               )}
 
-              {selectedSite.location && (
-                <div className="site-detail-row">
-                  <span className="site-detail-label">현장 주소</span>
-                  <span className="site-detail-value">
-                    {selectedSite.location}
+              {selectedSite.address && (
+                <div className="hp-detail-row">
+                  <span className="hp-detail-label">주소</span>
+                  <span className="hp-detail-value">
+                    {selectedSite.address}
                   </span>
                 </div>
               )}
 
-              <div className="site-detail-section-title">현장 메모 · 정산 내용</div>
-              <div className="site-detail-memo">
-                {selectedSite.memo ? (
-                  selectedSite.memo.split("\n").map((line, idx) => (
-                    <p key={idx}>{line}</p>
-                  ))
-                ) : (
-                  <p>입력된 메모가 없습니다.</p>
-                )}
-              </div>
+              {selectedSite.memo && (
+                <>
+                  <div className="hp-detail-section-title">현장 메모</div>
+                  <div className="hp-detail-memo">
+                    {selectedSite.memo.split("\n").map((line, idx) => (
+                      <p key={idx}>{line}</p>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {selectedSite.settlement && (
+                <>
+                  <div className="hp-detail-section-title">정산 메모</div>
+                  <div className="hp-detail-memo">
+                    {selectedSite.settlement.split("\n").map((line, idx) => (
+                      <p key={idx}>{line}</p>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );
