@@ -156,3 +156,48 @@ body {
     white-space: nowrap;
   }
 }
+/* ============================
+   📌 달력 화면 HTS 스타일 개선
+============================ */
+
+.calendar-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.calendar-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.calendar-cell {
+  padding: 12px 0;
+  background: #f3f4f6;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.calendar-cell:hover {
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.calendar-today {
+  background: #111827;
+  color: #ffffff;
+}
