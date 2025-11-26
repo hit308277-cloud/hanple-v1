@@ -113,3 +113,30 @@ export default function CalendarView() {
     </div>
   )
 }
+import React from 'react';
+
+export default function CalendarView() {
+  const today = new Date().getDate();
+  const days = Array.from({ length: 30 }, (_, i) => i + 1);
+
+  return (
+    <div className="calendar-container">
+      <div className="calendar-title">📅 2025년 11월</div>
+
+      <div className="calendar-grid">
+        {days.map(day => (
+          <div
+            key={day}
+            className={`calendar-cell ${day === today ? 'calendar-today' : ''}`}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 20, fontSize: 14, color: '#6b7280' }}>
+        날짜를 클릭하면 일정 등록/조회 기능이 열립니다.
+      </div>
+    </div>
+  );
+}
