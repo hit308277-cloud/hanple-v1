@@ -15,6 +15,11 @@ const INIT_ESTIMATE = {
 };
 
 function TaskChat({ estimates, setEstimates }) {
+  // ===== 안전장치: props 가 안 넘어와도 터지지 않게 =====
+  const safeEstimates = Array.isArray(estimates) ? estimates : [];
+  const safeSetEstimates =
+    typeof setEstimates === "function" ? setEstimates : () => {};
+
   const [activeTab, setActiveTab] = useState("chat"); // chat | estimate
   const [estimate, setEstimate] = useState(INIT_ESTIMATE);
 
@@ -58,15 +63,13 @@ function TaskChat({ estimates, setEstimates }) {
       createdAt: new Date().toLocaleString(),
     };
 
-    setEstimates((prev) => [newItem, ...prev]);
+    safeSetEstimates((prev) => [newItem, ...(Array.isArray(prev) ? prev : [])]);
     setEstimate(INIT_ESTIMATE);
     alert("견적서가 저장되었습니다. (📄 계약/견적관리 메뉴에서 계약 처리 가능)");
   };
 
   const formatMoney = (v) => (v ? Number(v).toLocaleString() : "");
 
-  // ===== 아래는 이전에 드린 렌더링 부분 그대로 유지 =====
-  // (길어서 다시 한 번 전체 넣습니다)
   return (
     <div className="panel task-panel">
       <div className="task-header">
@@ -77,6 +80,7 @@ function TaskChat({ estimates, setEstimates }) {
         </p>
       </div>
 
+      {/* 탭 버튼 */}
       <div className="task-tabs">
         <button
           className={activeTab === "chat" ? "tab-btn active" : "tab-btn"}
@@ -92,6 +96,7 @@ function TaskChat({ estimates, setEstimates }) {
         </button>
       </div>
 
+      {/* 채팅 탭 */}
       {activeTab === "chat" && (
         <div className="chat-placeholder">
           <p>
@@ -107,9 +112,10 @@ function TaskChat({ estimates, setEstimates }) {
         </div>
       )}
 
+      {/* 견적 탭 */}
       {activeTab === "estimate" && (
         <div className="estimate-layout">
-          {/* 왼쪽: 입력 폼 */}
+          {/* 왼쪽: 견적 입력폼 */}
           <div className="estimate-form">
             <h3>🧾 견적서 작성</h3>
 
@@ -252,7 +258,7 @@ function TaskChat({ estimates, setEstimates }) {
             </div>
           </div>
 
-          {/* 오른쪽: 미리보기 + 저장된 견적들 */}
+          {/* 오른쪽: 미리보기 + 저장 목록 */}
           <div className="estimate-preview">
             <h3>📄 견적서 미리보기</h3>
             {supply === 0 ? (
@@ -296,12 +302,12 @@ function TaskChat({ estimates, setEstimates }) {
             )}
 
             <h4 style={{ marginTop: "12px" }}>💾 저장된 견적 내역</h4>
-            {estimates.length === 0 && (
+            {safeEstimates.length === 0 && (
               <p className="empty-text">
                 아직 저장된 견적서가 없습니다. 견적서를 저장하면 이곳에 쌓입니다.
               </p>
             )}
-            {estimates.map((item) => (
+            {safeEstimates.map((item) => (
               <div key={item.id} className="estimate-list-item">
                 <div>
                   <strong>{item.customerName}</strong> / {item.address} /{" "}
