@@ -3,12 +3,20 @@ import { useState } from "react";
 import CalendarView from "./CalendarView.jsx";
 import TaskChat from "./TaskChat.jsx";
 import SettlementView from "./SettlementView.jsx";
+import WorkDoneView from "./WorkDoneView.jsx";
+import ContractsView from "./ContractsView.jsx";
+import WarehouseView from "./WarehouseView.jsx";
 
 function App() {
-  const [activeMenu, setActiveMenu] = useState("calendar"); // calendar | chat | settlement | settings
+  const [activeMenu, setActiveMenu] = useState("calendar");
 
-  // 한플 전체에서 공유하는 일정 목록
-  const [jobs, setJobs] = useState([]); // CalendarView에서 생성, SettlementView에서 정산
+  // 공통 데이터
+  const [jobs, setJobs] = useState([]);          // 일정 / 시공완료 / 정산
+  const [estimates, setEstimates] = useState([]); // 견적 / 계약
+  const [inventory, setInventory] = useState({
+    products: [], // 제품 마스터
+    movements: [], // 입·출고 내역
+  });
 
   return (
     <div className="app-root">
@@ -24,9 +32,8 @@ function App() {
         </div>
       </header>
 
-      {/* 좌측 메뉴 + 우측 내용 영역 */}
       <div className="app-body">
-        {/* 좌측 메뉴 */}
+        {/* 왼쪽 메뉴 */}
         <nav className="app-sidebar">
           <button
             className={activeMenu === "calendar" ? "nav-btn active" : "nav-btn"}
@@ -35,10 +42,28 @@ function App() {
             📅 일정 / 시공현장
           </button>
           <button
+            className={activeMenu === "workdone" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setActiveMenu("workdone")}
+          >
+            ✅ 시공완료
+          </button>
+          <button
             className={activeMenu === "chat" ? "nav-btn active" : "nav-btn"}
             onClick={() => setActiveMenu("chat")}
           >
-            💬 업무톡(한톡)
+            💬 한톡(견적)
+          </button>
+          <button
+            className={activeMenu === "contracts" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setActiveMenu("contracts")}
+          >
+            📄 계약 / 견적관리
+          </button>
+          <button
+            className={activeMenu === "warehouse" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setActiveMenu("warehouse")}
+          >
+            📦 창고 / 재고
           </button>
           <button
             className={activeMenu === "settlement" ? "nav-btn active" : "nav-btn"}
@@ -54,13 +79,32 @@ function App() {
           </button>
         </nav>
 
-        {/* 우측 메인 내용 */}
+        {/* 오른쪽 본문 */}
         <main className="app-content">
           {activeMenu === "calendar" && (
             <CalendarView jobs={jobs} setJobs={setJobs} />
           )}
 
-          {activeMenu === "chat" && <TaskChat />}
+          {activeMenu === "workdone" && (
+            <WorkDoneView jobs={jobs} setJobs={setJobs} />
+          )}
+
+          {activeMenu === "chat" && (
+            <TaskChat estimates={estimates} setEstimates={setEstimates} />
+          )}
+
+          {activeMenu === "contracts" && (
+            <ContractsView
+              estimates={estimates}
+              setEstimates={setEstimates}
+              jobs={jobs}
+              setJobs={setJobs}
+            />
+          )}
+
+          {activeMenu === "warehouse" && (
+            <WarehouseView inventory={inventory} setInventory={setInventory} />
+          )}
 
           {activeMenu === "settlement" && (
             <SettlementView jobs={jobs} setJobs={setJobs} />
@@ -68,8 +112,8 @@ function App() {
 
           {activeMenu === "settings" && (
             <div className="placeholder">
-              <h2>⚙️ 설정 화면 (다음 단계에서 구현)</h2>
-              <p>회사 정보, 직원 권한, 도메인, 브랜드 문구, 유료/무료 설정 등을 여기에 넣습니다.</p>
+              <h2>⚙️ 설정 화면 (추후 구현)</h2>
+              <p>회사 정보, 직원 권한, 요금제, 브랜드 문구 등을 설정하는 화면입니다.</p>
             </div>
           )}
         </main>
