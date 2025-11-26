@@ -1,387 +1,117 @@
-* {
-  box-sizing: border-box;
-}
+import React, { useState } from "react";
+import CalendarView from "./CalendarView";
+import TaskChat from "./TaskChat";
+import "./styles.css";
 
-/* 전체 화면 기본 설정 */
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
+export default function App() {
+  const [activeTab, setActiveTab] = useState("calendar"); // 'calendar' | 'chat' | 'site'
+  const [showRightPanel, setShowRightPanel] = useState(true);
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f5f7fb;
-  color: #111827;
-}
+  return (
+    <div className="app-root">
+      {/* 상단 바 */}
+      <header className="app-topbar">
+        <div className="topbar-left">
+          <span className="brand-main">HANPLE</span>
+          <span className="brand-sub">한플 업무 ERP v1.0</span>
+        </div>
+        <div className="topbar-center">
+          <span className="topbar-info">
+            로컬 테스트용 — 현재는 수동 입력 / 더미데이터, 추후 한톡·STO
+            연동
+          </span>
+        </div>
+        <div className="topbar-right">
+          <button
+            type="button"
+            className="btn-outline small"
+            onClick={() => setShowRightPanel((prev) => !prev)}
+          >
+            {showRightPanel ? "오른쪽 패널 접기" : "오른쪽 패널 펼치기"}
+          </button>
+        </div>
+      </header>
 
-/* 최상위 컨테이너 */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* PC에서 항상 화면 꽉 차게 */
-}
+      {/* 전체 레이아웃 */}
+      <div className="app-layout">
+        {/* 왼쪽: 기능 선택 (HTS 느낌) */}
+        <nav className="app-sidebar">
+          <div className="sidebar-title">기능 선택 (HTS 편의 화면)</div>
 
-/* 상단 헤더 */
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-}
+          <button
+            type="button"
+            className={
+              "sidebar-tab" + (activeTab === "calendar" ? " active" : "")
+            }
+            onClick={() => setActiveTab("calendar")}
+          >
+            📅 달력 일정
+            <span className="sidebar-tab-sub">전체 현장 일정을 한눈에</span>
+          </button>
 
-.logo {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
+          <button
+            type="button"
+            className={
+              "sidebar-tab" + (activeTab === "chat" ? " active" : "")
+            }
+            onClick={() => setActiveTab("chat")}
+          >
+            💬 업무톡(한톡)
+            <span className="sidebar-tab-sub">
+              카카오톡처럼 쓰는 현장 업무 채팅
+            </span>
+          </button>
 
-.logo-mark {
-  font-weight: 700;
-  font-size: 18px;
-  color: #111827;
-}
+          <button
+            type="button"
+            className={
+              "sidebar-tab" + (activeTab === "site" ? " active" : "")
+            }
+            onClick={() => setActiveTab("site")}
+          >
+            🏠 SITE / 홈케어
+            <span className="sidebar-tab-sub">
+              우리집관리·AS·필터교체 등 홈케어 관리
+            </span>
+          </button>
 
-.logo-sub {
-  font-size: 12px;
-  color: #6b7280;
-}
+          <div className="sidebar-tip">
+            ➕ 나중에 &quot;도매관리&quot;, &quot;정산&quot;,
+            &quot;STO계약&quot; 등 탭을 더 추가할 수 있습니다.
+          </div>
+        </nav>
 
-/* HTS 상단 툴바 */
-.hts-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+        {/* 가운데 + 오른쪽: 컨텐츠 영역 */}
+        <main
+          className={
+            "app-main-area" + (showRightPanel ? " with-right" : " no-right")
+          }
+        >
+          {activeTab === "calendar" && <CalendarView />}
 
-.hts-toggle {
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-}
+          {activeTab === "chat" && (
+            <div className="placeholder-center">
+              <div className="placeholder-title">업무톡(한톡) 화면 자리</div>
+              <p>
+                여기에는 카카오톡 스타일 채팅 + 거래처 자동등록 + 일정연동
+                화면이 들어갑니다.
+              </p>
+              <p>기능 설계는 유지하고, UI만 나중에 단계적으로 붙이면 됩니다.</p>
+            </div>
+          )}
 
-.hts-toggle:hover {
-  background: #e5e7eb;
-}
-
-/* 메인 레이아웃 (좌측 기능, 우측 화면) */
-.app-body {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-}
-
-/* 좌측 기능 패널 (HTS 티어 영역) */
-.left-panel {
-  width: 260px;
-  min-width: 220px;
-  max-width: 320px;
-  border-right: 1px solid #e5e7eb;
-  background: #ffffff;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.left-panel-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #4b5563;
-}
-
-/* 탭 버튼들 */
-.tabs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.tab-btn {
-  text-align: left;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  color: #4b5563;
-  cursor: pointer;
-}
-
-.tab-btn:hover {
-  background: #f3f4f6;
-}
-
-.tab-btn.tab-active {
-  background: #111827;
-  color: #ffffff;
-}
-
-/* 우측 실제 화면 (달력 / 한톡 / 홈케어) */
-.right-panel {
-  flex: 1;
-  min-width: 0;
-  padding: 16px 20px;
-  overflow: auto;
-}
-
-/* 반응형 (모바일에서는 위아래로 정렬) */
-@media (max-width: 900px) {
-  .app-body {
-    flex-direction: column;
-  }
-
-  .left-panel {
-    width: 100%;
-    max-width: none;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
-    flex-direction: row;
-    overflow-x: auto;
-  }
-
-  .tabs {
-    flex-direction: row;
-  }
-
-  .tab-btn {
-    white-space: nowrap;
-  }
-}
-/* ============================
-   📌 달력 화면 HTS 스타일 개선
-============================ */
-
-.calendar-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.calendar-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.calendar-cell {
-  padding: 12px 0;
-  background: #f3f4f6;
-  text-align: center;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.calendar-cell:hover {
-  background: #e5e7eb;
-  cursor: pointer;
-}
-
-.calendar-today {
-  background: #111827;
-  color: #ffffff;
-}
-/* ============================
-   📌 HTS 레이아웃 (달력 + 우측 패널)
-============================ */
-
-.calendar-layout {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-/* 왼쪽 달력 영역 */
-.calendar-main {
-  flex: 2;
-}
-
-.calendar-title-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.calendar-title {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.calendar-sub {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-/* 요일 헤더 */
-.calendar-week-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.calendar-week-cell {
-  text-align: center;
-}
-
-/* 날짜 그리드 */
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-}
-
-.calendar-cell {
-  padding: 10px 0;
-  background: #f9fafb;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  font-size: 13px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.calendar-cell:hover {
-  background: #eef2ff;
-  border-color: #4f46e5;
-}
-
-.calendar-today {
-  border-color: #111827;
-  font-weight: 700;
-}
-
-.calendar-selected {
-  background: #111827;
-  color: #ffffff;
-}
-
-/* 오른쪽 일정 패널 */
-.calendar-side {
-  flex: 1.2;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-}
-
-.side-header {
-  margin-bottom: 12px;
-}
-
-.side-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.side-desc {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.side-events {
-  max-height: 240px;
-  overflow-y: auto;
-  margin-bottom: 16px;
-}
-
-.side-empty {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-.side-event-card {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  margin-bottom: 8px;
-}
-
-.event-title {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.event-memo {
-  font-size: 12px;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
-/* 일정 입력 폼 */
-.side-form {
-  border-top: 1px solid #e5e7eb;
-  padding-top: 12px;
-}
-
-.side-form-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.side-input,
-.side-textarea {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  padding: 6px 8px;
-  font-size: 13px;
-  margin-bottom: 6px;
-  resize: vertical;
-}
-
-.side-input:focus,
-.side-textarea:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 1px rgba(79,70,229,0.3);
-}
-
-.side-btn {
-  width: 100%;
-  padding: 8px 0;
-  border-radius: 6px;
-  border: none;
-  background: #111827;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.side-btn:hover {
-  background: #030712;
-}
-
-/* 모바일에서 위·아래로 쌓이게 */
-@media (max-width: 900px) {
-  .calendar-layout {
-    flex-direction: column;
-  }
+          {activeTab === "site" && (
+            <div className="placeholder-center">
+              <div className="placeholder-title">SITE / 홈케어 화면 자리</div>
+              <p>
+                우리집관리, 필터교체 알림, AS 요청, 계약서 보관 등 홈케어용
+                기능이 이 탭에 들어갑니다.
+              </p>
+              <p>현재는 뼈대만 두고, 추후 기능을 하나씩 추가하면 됩니다.</p>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
 }
