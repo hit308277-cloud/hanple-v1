@@ -1,257 +1,150 @@
 // src/CalendarView.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function getDateKey(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+// YYYY-MM-DD → Date
+function parseDate(str) {
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
 }
 
-export default function CalendarView({ sitesByDate, onAddSite, onOpenSite }) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
+function formatDate(y, m, d) {
+  const mm = String(m + 1).padStart(2, "0");
+  const dd = String(d).padStart(2, "0");
+  return `${y}-${mm}-${dd}`;
+}
 
-  const [title, setTitle] = useState("");
-  const [memo, setMemo] = useState("");
-  const [head, setHead] = useState("");
-  const [labor, setLabor] = useState("");
-  const [extra, setExtra] = useState("");
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
 
-  const selectedKey = getDateKey(selectedDate);
-  const siteList = sitesByDate[selectedKey] || [];
+export default function CalendarView({
+  selectedDate,
+  jobs,
+  onChangeDate,
+  onSelectJob,
+}) {
+  const baseDate = parseDate(selectedDate);
+  const [viewYear, setViewYear] = useState(baseDate.getFullYear());
+  const [viewMonth, setViewMonth] = useState(baseDate.getMonth());
+
+  // 날짜 바뀌면 달력 월도 맞춰주기
+  useEffect(() => {
+    const d = parseDate(selectedDate);
+    setViewYear(d.getFullYear());
+    setViewMonth(d.getMonth());
+  }, [selectedDate]);
+
+  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=일요일
 
   const handlePrevMonth = () => {
-    const d = new Date(currentMonth);
-    d.setMonth(d.getMonth() - 1);
-    setCurrentMonth(d);
+    const newMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+    const newYear = viewMonth === 0 ? viewYear - 1 : viewYear;
+    setViewYear(newYear);
+    setViewMonth(newMonth);
+    // 날짜도 첫째 날로 이동
+    onChangeDate(formatDate(newYear, newMonth, 1));
   };
 
   const handleNextMonth = () => {
-    const d = new Date(currentMonth);
-    d.setMonth(d.getMonth() + 1);
-    setCurrentMonth(d);
+    const newMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+    const newYear = viewMonth === 11 ? viewYear + 1 : viewYear;
+    setViewYear(newYear);
+    setViewMonth(newMonth);
+    onChangeDate(formatDate(newYear, newMonth, 1));
   };
 
-  const handleDayClick = (day) => {
-    if (!day) return;
-    const d = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    setSelectedDate(d);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!title.trim()) {
-      alert("현장 제목을 입력하세요.");
-      return;
-    }
-
-    const newSite = {
-      id: Date.now(),
-      date: selectedKey,
-      title: title.trim(),
-      memo: memo.trim(),
-      head: head,
-      labor: labor,
-      extra: extra,
-    };
-
-    onAddSite(newSite);
-
-    // 입력값 초기화
-    setTitle("");
-    setMemo("");
-    setHead("");
-    setLabor("");
-    setExtra("");
-  };
-
-  // 현재 달의 달력 데이터 생성
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth(); // 0~11
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const firstWeekday = firstDay.getDay(); // 0(일)~6(토)
-  const daysInMonth = lastDay.getDate();
+  const selected = parseDate(selectedDate);
 
   const cells = [];
-  for (let i = 0; i < firstWeekday; i++) {
-    cells.push(null);
+  // 앞쪽 빈칸
+  for (let i = 0; i < firstDay; i++) {
+    cells.push(<div key={`empty-${i}`} className="cal-cell cal-empty" />);
   }
+  // 날짜 칸
   for (let d = 1; d <= daysInMonth; d++) {
-    cells.push(d);
-  }
-  while (cells.length % 7 !== 0) {
-    cells.push(null);
+    const isSelected =
+      selected.getFullYear() === viewYear &&
+      selected.getMonth() === viewMonth &&
+      selected.getDate() === d;
+
+    const dateStr = formatDate(viewYear, viewMonth, d);
+
+    cells.push(
+      <button
+        key={d}
+        className={
+          "cal-cell cal-day" + (isSelected ? " cal-day-selected" : "")
+        }
+        onClick={() => onChangeDate(dateStr)}
+      >
+        {d}
+      </button>
+    );
   }
 
-  const rows = [];
-  for (let i = 0; i < cells.length; i += 7) {
-    rows.push(cells.slice(i, i + 7));
-  }
-
-  const selectedDateLabel = `${selectedDate.getFullYear()}년 ${
-    selectedDate.getMonth() + 1
-  }월 ${selectedDate.getDate()}일`;
+  // 요일
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
 
   return (
-    <div className="calendar-layout">
-      {/* 좌측: 달력 + 새 현장 추가 폼 */}
-      <section className="calendar-left">
-        <header className="calendar-header">
-          <div className="calendar-title">
-            HANPLE ERP - 일정·현장 관리
-          </div>
-          <div className="calendar-month-nav">
-            <button onClick={handlePrevMonth}>◀</button>
-            <span>
-              {year}년 {month + 1}월
-            </span>
-            <button onClick={handleNextMonth}>▶</button>
-          </div>
-        </header>
+    <div className="left-panel">
+      <h1 className="app-title">HANPLE ERP</h1>
+      <p className="app-subtitle">달력 · 현장 선택 (카톡 방 목록 역할)</p>
 
-        <table className="calendar-table">
-          <thead>
-            <tr>
-              <th>일</th>
-              <th>월</th>
-              <th>화</th>
-              <th>수</th>
-              <th>목</th>
-              <th>금</th>
-              <th>토</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((week, idx) => (
-              <tr key={idx}>
-                {week.map((day, idx2) => {
-                  if (!day) {
-                    return <td key={idx2} className="calendar-cell empty" />;
-                  }
-                  const dateKey = getDateKey(
-                    new Date(year, month, day)
-                  );
-                  const hasSites = (sitesByDate[dateKey] || []).length > 0;
-                  const isSelected =
-                    dateKey === getDateKey(selectedDate);
-
-                  return (
-                    <td
-                      key={idx2}
-                      className={
-                        "calendar-cell" +
-                        (isSelected ? " calendar-cell-selected" : "") +
-                        (hasSites ? " calendar-cell-has-sites" : "")
-                      }
-                      onClick={() => handleDayClick(day)}
-                    >
-                      <span className="day-number">{day}</span>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="selected-date-box">
-          <div className="selected-date-label">
-            선택한 날짜: {selectedDateLabel}
-          </div>
-          <div className="selected-date-help">
-            날짜를 선택한 뒤 아래에서 현장을 등록하세요.
-          </div>
+      <div className="calendar-card">
+        <div className="calendar-header">
+          <button onClick={handlePrevMonth}>&lt;</button>
+          <span>
+            {viewYear}년 {viewMonth + 1}월
+          </span>
+          <button onClick={handleNextMonth}>&gt;</button>
         </div>
 
-        <form className="new-site-form" onSubmit={handleSubmit}>
-          <h3 className="panel-title">새 현장 추가</h3>
-
-          <label className="form-label">현장 제목</label>
-          <input
-            className="form-input"
-            placeholder="예) 한성/미입금 엘지 천안 정대현"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
-          <label className="form-label">현장 메모</label>
-          <textarea
-            className="form-textarea"
-            placeholder="현장 메모, 공사 범위, 주소, 연락처 등을 입력하세요."
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-          />
-
-          <div className="form-grid">
-            <div>
-              <label className="form-label">머리 (제품·자재)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={head}
-                onChange={(e) => setHead(e.target.value)}
-                placeholder="예) 5,000,000"
-              />
+        <div className="calendar-weekdays">
+          {weekdays.map((w) => (
+            <div key={w} className="cal-cell cal-weekday">
+              {w}
             </div>
-            <div>
-              <label className="form-label">손발 (인건비)</label>
-              <input
-                type="number"
-                className="form-input"
-                value={labor}
-                onChange={(e) => setLabor(e.target.value)}
-                placeholder="예) 2,000,000"
-              />
-            </div>
-            <div>
-              <label className="form-label">기타</label>
-              <input
-                type="number"
-                className="form-input"
-                value={extra}
-                onChange={(e) => setExtra(e.target.value)}
-                placeholder="예) 300,000"
-              />
-            </div>
-          </div>
+          ))}
+        </div>
 
-          <button type="submit" className="primary-btn">
-            현장 저장
-          </button>
-        </form>
-      </section>
+        <div className="calendar-grid">{cells}</div>
+      </div>
 
-      {/* 우측: 선택한 날짜의 현장 목록 (제목만) */}
-      <section className="calendar-right">
-        <h3 className="panel-title">
-          {selectedDateLabel} 현장 목록
-        </h3>
-        <p className="right-panel-help">
-          ● 카톡 방 리스트처럼, 제목만 보이고  
-          ● 제목을 클릭하면 별도 상세 화면에서 메모·정산을 볼 수 있습니다.
-        </p>
+      <div className="job-list-wrapper">
+        <div className="job-list-header">
+          <span>
+            {selectedDate.replace(/-/g, ".")} 현장 목록 ({jobs.length}건)
+          </span>
+          <span className="job-list-hint">제목을 클릭하면 오른쪽에 상세 한톡이 열립니다.</span>
+        </div>
 
-        {siteList.length === 0 ? (
-          <div className="site-empty">
-            아직 등록된 현장이 없습니다.
+        {jobs.length === 0 ? (
+          <div className="job-list-empty">
+            아직 등록된 현장이 없습니다.  
+            오른쪽 한톡에서 새 현장을 등록하세요.
           </div>
         ) : (
-          <ul className="site-list">
-            {siteList.map((site) => (
-              <li
-                key={site.id}
-                className="site-list-item"
-                onClick={() => onOpenSite(site)}
-              >
-                <div className="site-title">{site.title}</div>
+          <ul className="job-list">
+            {jobs.map((job) => (
+              <li key={job.id}>
+                <button
+                  className="job-list-item"
+                  onClick={() => onSelectJob(job.id)}
+                >
+                  {/* 카톡 방 이름 느낌 */}
+                  <div className="job-title-line">{job.title}</div>
+                  <div className="job-subline">
+                    머리: {job.head.toLocaleString()} / 손발:{" "}
+                    {job.hands.toLocaleString()} / 기타:{" "}
+                    {job.extra.toLocaleString()}
+                  </div>
+                </button>
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </div>
     </div>
   );
 }
