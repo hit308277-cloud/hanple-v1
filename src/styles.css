@@ -593,3 +593,110 @@ body, html {
   font-size: 11px;
   color: #6b7280;
 }
+/* 회사 / 직원·권한 관리 */
+.company-section {
+  margin-top: 10px;
+  margin-bottom: 14px;
+}
+
+.company-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.company-field {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.company-field.full {
+  flex: 1 1 100%;
+}
+
+.company-field label {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.company-field input,
+.company-field select {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.company-plan-info {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #374151;
+}
+
+.employee-form {
+  margin-bottom: 8px;
+}
+
+.employee-table {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.employee-header-row,
+.employee-row {
+  display: grid;
+  grid-template-columns: 140px 90px 1fr;
+  gap: 6px;
+  padding: 6px 8px;
+}
+
+.employee-header-row {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.employee-row:nth-child(even) {
+  background: #f9fafb;
+}
+
+.col-name,
+.col-status,
+.col-perms {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.emp-name {
+  font-weight: 600;
+}
+
+.emp-role {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.col-status select {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.col-perms {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.col-perms label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+}
