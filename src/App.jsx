@@ -2,16 +2,19 @@
 import { useState } from "react";
 import CalendarView from "./CalendarView.jsx";
 import TaskChat from "./TaskChat.jsx";
+import SettlementView from "./SettlementView.jsx";
 
 function App() {
   const [activeMenu, setActiveMenu] = useState("calendar"); // calendar | chat | settlement | settings
+
+  // 한플 전체에서 공유하는 일정 목록
+  const [jobs, setJobs] = useState([]); // CalendarView에서 생성, SettlementView에서 정산
 
   return (
     <div className="app-root">
       {/* 상단 헤더 */}
       <header className="app-header">
         <div className="app-logo">
-          {/* 로고 글자 / 나중에 이미지로 교체 가능 */}
           <span className="logo-main">HANPLE</span>
           <span className="logo-sub">ERP v1.0</span>
         </div>
@@ -53,14 +56,14 @@ function App() {
 
         {/* 우측 메인 내용 */}
         <main className="app-content">
-          {activeMenu === "calendar" && <CalendarView />}
+          {activeMenu === "calendar" && (
+            <CalendarView jobs={jobs} setJobs={setJobs} />
+          )}
+
           {activeMenu === "chat" && <TaskChat />}
 
           {activeMenu === "settlement" && (
-            <div className="placeholder">
-              <h2>💰 정산 화면 (다음 단계에서 구현)</h2>
-              <p>시공완료 건 정산 / 카드·현금·계좌 / 부가세 / 현금영수증 / 세금계산서 등을 여기에 넣습니다.</p>
-            </div>
+            <SettlementView jobs={jobs} setJobs={setJobs} />
           )}
 
           {activeMenu === "settings" && (
