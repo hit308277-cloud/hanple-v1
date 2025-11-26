@@ -1,271 +1,218 @@
-// src/TaskChat.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-function formatKoreanDate(dateStr) {
-  const [y, m, d] = dateStr.split("-");
-  return `${y}년 ${Number(m)}월 ${Number(d)}일`;
-}
+let nextId = 1;
 
-const emptyForm = {
-  title: "",
-  memo: "",
-  head: "",
-  hands: "",
-  extra: "",
-};
+export default function TaskChat({ selectedDate, jobs, onChangeJobs }) {
+  const [selectedJobId, setSelectedJobId] = useState(null);
 
-export default function TaskChat({
-  selectedDate,
-  selectedJob,
-  hasJobs,
-  onCreateJob,
-  onUpdateJob,
-}) {
-  // 상세 화면에서 수정용 상태
-  const [edit, setEdit] = useState(emptyForm);
-  // 새 현장 등록용 상태
-  const [newForm, setNewForm] = useState(emptyForm);
+  // 새 현장 입력용 상태
+  const [title, setTitle] = useState("");
+  const [memo, setMemo] = useState("");
+  const [head, setHead] = useState("");
+  const [hands, setHands] = useState("");
+  const [extra, setExtra] = useState("");
 
-  // 선택 현장 바뀌면 수정폼 동기화
-  useEffect(() => {
-    if (!selectedJob) {
-      setEdit(emptyForm);
-      return;
-    }
-    setEdit({
-      title: selectedJob.title,
-      memo: selectedJob.memo,
-      head: String(selectedJob.head),
-      hands: String(selectedJob.hands),
-      extra: String(selectedJob.extra),
-    });
-  }, [selectedJob]);
-
-  const parseNumber = (v) => {
-    const n = Number(v.toString().replace(/,/g, ""));
-    return Number.isNaN(n) ? 0 : n;
+  const resetForm = () => {
+    setTitle("");
+    setMemo("");
+    setHead("");
+    setHands("");
+    setExtra("");
   };
 
-  const handleSaveEdit = () => {
+  const handleCreateJob = () => {
+    if (!title.trim()) {
+      alert("현장 제목(업체명 + 요약)을 입력해 주세요.");
+      return;
+    }
+
+    const newJob = {
+      id: nextId++,
+      title: title.trim(),
+      memo: memo.trim(),
+      head: Number(head || 0),
+      hands: Number(hands || 0),
+      extra: Number(extra || 0),
+      createdAt: new Date().toISOString(),
+    };
+
+    const newJobs = [...jobs, newJob];
+    onChangeJobs(newJobs);
+    setSelectedJobId(newJob.id);
+    resetForm();
+  };
+
+  const selectedJob = jobs.find((j) => j.id === selectedJobId) || null;
+
+  const handleUpdateSelectedJob = () => {
     if (!selectedJob) return;
-    onUpdateJob({
-      title: edit.title.trim() || "제목 없음",
-      memo: edit.memo,
-      head: parseNumber(edit.head),
-      hands: parseNumber(edit.hands),
-      extra: parseNumber(edit.extra),
-    });
-    alert("현장 정보가 저장되었습니다.");
+
+    const updated = {
+      ...selectedJob,
+      memo,
+      head: Number(head || 0),
+      hands: Number(hands || 0),
+      extra: Number(extra || 0),
+    };
+
+    const newJobs = jobs.map((j) => (j.id === selectedJob.id ? updated : j));
+    onChangeJobs(newJobs);
+    alert("현장 정보가 수정되었습니다.");
   };
 
-  const handleCreate = () => {
-    if (!newForm.title.trim()) {
-      alert("현장 제목을 입력해주세요. (예: 한성/미입금 일지 천안 정대현)");
-      return;
-    }
-
-    onCreateJob({
-      title: newForm.title.trim(),
-      memo: newForm.memo,
-      head: parseNumber(newForm.head),
-      hands: parseNumber(newForm.hands),
-      extra: parseNumber(newForm.extra),
-    });
-
-    setNewForm(emptyForm);
-    alert("새 현장이 등록되었습니다. (좌측 목록과 달력에 반영)");
+  const handleClickJob = (job) => {
+    setSelectedJobId(job.id);
+    setTitle(job.title);
+    setMemo(job.memo || "");
+    setHead(String(job.head || ""));
+    setHands(String(job.hands || ""));
+    setExtra(String(job.extra || ""));
   };
 
-  const currentHead = selectedJob ? selectedJob.head : 0;
-  const currentHands = selectedJob ? selectedJob.hands : 0;
-  const currentExtra = selectedJob ? selectedJob.extra : 0;
-  const currentNet = currentHead - currentHands - currentExtra;
+  const total = (Number(head || 0) + Number(hands || 0) + Number(extra || 0)) || 0;
 
   return (
-    <div className="right-panel">
-      {/* 상단 헤더 - 카톡 채팅창 느낌 */}
-      <header className="chat-header">
-        <div className="chat-header-title">
-          <span className="chat-main-title">한톡 (업무톡)</span>
-          <span className="chat-sub-title">
-            {formatKoreanDate(selectedDate)} 기준 현장 한톡 · 정산
-          </span>
+    <div className="taskchat-layout">
+      {/* 왼쪽 : 카톡 방 리스트 */}
+      <div className="taskchat-list-panel">
+        <div className="taskchat-list-header">
+          <div className="list-title">한톡(업무톡) 방 목록</div>
+          <div className="list-sub">
+            {selectedDate} 기준 · 총 {jobs.length}개 현장
+          </div>
         </div>
-      </header>
 
-      <div className="chat-body">
-        {/* 선택된 현장 상세 (카톡 채팅창 같은 역할) */}
-        <section className="chat-room">
-          {!selectedJob && !hasJobs && (
-            <div className="chat-empty">
-              <p>
-                아직 현장이 없습니다.
-                <br />
-                아래 <strong>“새 현장 등록”</strong>에서 먼저 현장을 추가하세요.
-              </p>
+        <div className="taskchat-list">
+          {jobs.length === 0 && (
+            <div className="empty-list">
+              아직 등록된 현장이 없습니다.
+              <br />
+              아래 입력창에서 새 현장을 등록해 주세요.
             </div>
           )}
 
-          {!selectedJob && hasJobs && (
-            <div className="chat-empty">
-              <p>
-                좌측 달력 아래 <strong>현장 제목</strong>을 클릭하면
-                <br />
-                여기에서 해당 현장의 메모와 정산을 볼 수 있습니다.
-              </p>
+          {jobs.map((job) => (
+            <button
+              key={job.id}
+              className={`job-list-item ${
+                job.id === selectedJobId ? "job-list-item-active" : ""
+              }`}
+              onClick={() => handleClickJob(job)}
+            >
+              <div className="job-title">{job.title}</div>
+              <div className="job-meta">
+                메모 {job.memo ? "있음" : "없음"} · 정산{" "}
+                {job.head || job.hands || job.extra ? "입력됨" : "미입력"}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 오른쪽 : 선택된 방 상세 (카톡 스타일) */}
+      <div className="taskchat-detail-panel">
+        {!selectedJob && (
+          <div className="detail-empty">
+            왼쪽에서 **현장 제목**을 선택하면
+            <br />
+            이 영역에 카톡 형식으로
+            <br />
+            메모 · 정산 정보가 표시됩니다.
+          </div>
+        )}
+
+        {selectedJob && (
+          <div className="detail-wrapper">
+            {/* 상단 제목(방 제목) */}
+            <div className="chat-header-bar">
+              <div className="chat-room-title">{selectedJob.title}</div>
+              <div className="chat-room-sub">
+                {selectedDate} · 한톡 현장 단톡방
+              </div>
             </div>
-          )}
 
-          {selectedJob && (
-            <div className="chat-detail">
-              <h2 className="chat-room-title">{edit.title || "제목 없음"}</h2>
-              <p className="chat-room-date">
-                {formatKoreanDate(selectedDate)} · 한플 ERP 현장 한톡
-              </p>
-
-              <div className="chat-section">
-                <h3>현장 메모 · 공사 범위</h3>
+            <div className="chat-body">
+              {/* 메모 카드 */}
+              <div className="chat-card">
+                <div className="chat-card-title">현장 메모 · 공사 범위</div>
                 <textarea
-                  className="chat-textarea"
-                  placeholder="예) 천안 두정푸르지오 3대 설치 / 한성 미입금 일지 등"
-                  value={edit.memo}
-                  onChange={(e) =>
-                    setEdit((prev) => ({ ...prev, memo: e.target.value }))
-                  }
+                  className="memo-textarea"
+                  placeholder="카톡에 쓰듯이 현장 상황, 공사 범위, 메모를 자유롭게 입력하세요."
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
                 />
               </div>
 
-              <div className="chat-section">
-                <h3>정산 (머리 · 손발 · 기타)</h3>
-                <div className="settle-grid">
-                  <label>
-                    머리 (계약금액 또는 도급비)
-                    <input
-                      type="text"
-                      value={edit.head}
-                      onChange={(e) =>
-                        setEdit((prev) => ({ ...prev, head: e.target.value }))
-                      }
-                      placeholder="예) 5,000,000"
-                    />
-                  </label>
-                  <label>
-                    손발 (인건비/시공비)
-                    <input
-                      type="text"
-                      value={edit.hands}
-                      onChange={(e) =>
-                        setEdit((prev) => ({ ...prev, hands: e.target.value }))
-                      }
-                      placeholder="예) 2,000,000"
-                    />
-                  </label>
-                  <label>
-                    기타 (자재/경비 등)
-                    <input
-                      type="text"
-                      value={edit.extra}
-                      onChange={(e) =>
-                        setEdit((prev) => ({ ...prev, extra: e.target.value }))
-                      }
-                      placeholder="예) 300,000"
-                    />
-                  </label>
-                </div>
+              {/* 정산 카드 */}
+              <div className="chat-card">
+                <div className="chat-card-title">정산 (머리 · 손발 · 기타)</div>
 
-                <div className="settle-summary">
-                  <div>머리: {currentHead.toLocaleString()}원</div>
-                  <div>손발: {currentHands.toLocaleString()}원</div>
-                  <div>기타: {currentExtra.toLocaleString()}원</div>
-                  <div className="settle-net">
-                    순이익(머리-손발-기타):{" "}
-                    <strong>{currentNet.toLocaleString()}원</strong>
+                <div className="settlement-grid">
+                  <div className="settlement-row">
+                    <label>머리 (계약자 수익)</label>
+                    <input
+                      type="number"
+                      className="settlement-input"
+                      value={head}
+                      onChange={(e) => setHead(e.target.value)}
+                      placeholder="예) 5000000"
+                    />
+                    <span className="settlement-unit">원</span>
+                  </div>
+                  <div className="settlement-row">
+                    <label>손발 (인건비)</label>
+                    <input
+                      type="number"
+                      className="settlement-input"
+                      value={hands}
+                      onChange={(e) => setHands(e.target.value)}
+                      placeholder="예) 2000000"
+                    />
+                    <span className="settlement-unit">원</span>
+                  </div>
+                  <div className="settlement-row">
+                    <label>기타 (경비 등)</label>
+                    <input
+                      type="number"
+                      className="settlement-input"
+                      value={extra}
+                      onChange={(e) => setExtra(e.target.value)}
+                      placeholder="예) 300000"
+                    />
+                    <span className="settlement-unit">원</span>
                   </div>
                 </div>
+
+                <div className="settlement-summary">
+                  <span>합계(머리+손발+기타)</span>
+                  <span className="settlement-total">
+                    {total.toLocaleString()} 원
+                  </span>
+                </div>
               </div>
 
-              <div className="chat-actions">
-                <button onClick={handleSaveEdit}>현장 정보 저장</button>
+              <div className="detail-buttons">
+                <button className="btn-primary" onClick={handleUpdateSelectedJob}>
+                  선택된 현장 정보 저장(수정)
+                </button>
               </div>
             </div>
-          )}
-        </section>
-
-        {/* 아래쪽 : 새 현장 등록 (한톡 입력창 역할) */}
-        <section className="new-job-section">
-          <h3>📝 새 현장 등록 (한톡 입력창)</h3>
-          <p className="new-job-help">
-            카톡처럼 이 입력창에서만 현장을 등록·수정합니다. 달력은{" "}
-            <strong>보기용</strong>입니다.
-          </p>
-
-          <div className="new-job-grid">
-            <label>
-              현장 제목 (업체/미입금/지역 등)
-              <input
-                type="text"
-                value={newForm.title}
-                onChange={(e) =>
-                  setNewForm((prev) => ({ ...prev, title: e.target.value }))
-                }
-                placeholder="예) 한성/미입금 일지 천안 정대현"
-              />
-            </label>
-
-            <label>
-              메모 (현장 주소, 공사 범위 등)
-              <textarea
-                value={newForm.memo}
-                onChange={(e) =>
-                  setNewForm((prev) => ({ ...prev, memo: e.target.value }))
-                }
-                placeholder="예) 천안 두정푸르지오 3대 설치, 미입금 내역 등 상세 메모"
-              />
-            </label>
-
-            <div className="settle-grid">
-              <label>
-                머리
-                <input
-                  type="text"
-                  value={newForm.head}
-                  onChange={(e) =>
-                    setNewForm((prev) => ({ ...prev, head: e.target.value }))
-                  }
-                  placeholder="계약금액"
-                />
-              </label>
-              <label>
-                손발
-                <input
-                  type="text"
-                  value={newForm.hands}
-                  onChange={(e) =>
-                    setNewForm((prev) => ({ ...prev, hands: e.target.value }))
-                  }
-                  placeholder="인건비/시공비"
-                />
-              </label>
-              <label>
-                기타
-                <input
-                  type="text"
-                  value={newForm.extra}
-                  onChange={(e) =>
-                    setNewForm((prev) => ({ ...prev, extra: e.target.value }))
-                  }
-                  placeholder="자재/경비 등"
-                />
-              </label>
-            </div>
           </div>
+        )}
 
-          <div className="chat-actions">
-            <button onClick={handleCreate}>
-              {formatKoreanDate(selectedDate)} 새 현장 등록
-            </button>
-          </div>
-        </section>
+        {/* 새 현장 추가 – 화면 제일 아래, 카톡 입력창 느낌 */}
+        <div className="new-job-section">
+          <div className="new-job-title">새 현장 추가 (카톡 입력창 느낌)</div>
+          <input
+            className="new-job-input"
+            placeholder="현장 제목 (예: 한성/미입금 천안 정대현, 삼성 무풍 4대 설치)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <button className="btn-secondary" onClick={handleCreateJob}>
+            새 현장 등록
+          </button>
+        </div>
       </div>
     </div>
   );
