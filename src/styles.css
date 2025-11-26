@@ -552,3 +552,44 @@ body, html {
   margin-top: 4px;
   font-size: 11px;
 }
+/* 창고 / 재고 */
+.warehouse-section {
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.warehouse-form {
+  margin-bottom: 8px;
+}
+
+.warehouse-list h4 {
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.warehouse-product,
+.warehouse-move {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: #f9fafb;
+  font-size: 12px;
+}
+
+.warehouse-sub {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.warehouse-stock {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.warehouse-date {
+  font-size: 11px;
+  color: #6b7280;
+}
