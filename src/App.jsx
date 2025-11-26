@@ -1,146 +1,86 @@
 // src/App.jsx
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import CalendarView from "./CalendarView";
 import TaskChat from "./TaskChat";
 import "./styles.css";
 
-function formatDate(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+function makeTodayString() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
 export default function App() {
-  const today = useMemo(() => formatDate(new Date()), []);
-  const [selectedDate, setSelectedDate] = useState(today);
+  // 선택된 날짜 (YYYY-MM-DD)
+  const [selectedDate, setSelectedDate] = useState(makeTodayString());
 
-  // 전체 현장 목록 (달력+한톡이 같이 쓰는 공통 데이터)
-  // job = { id, date, company, title, memo, amounts:{head,hands,extra}, messages:[] }
-  const [jobs, setJobs] = useState([]);
+  // 날짜별 현장 목록
+  // 예: { "2025-11-26": [ {id, title, memo, head, hands, extra} ] }
+  const [jobsByDate, setJobsByDate] = useState({});
+
+  // 선택된 현장 ID (카톡에서 방 하나 선택한 것처럼)
   const [selectedJobId, setSelectedJobId] = useState(null);
 
-  const jobsForSelectedDate = jobs.filter(
-    (job) => job.date === selectedDate
-  );
+  const jobsForSelectedDate = jobsByDate[selectedDate] || [];
   const selectedJob =
-    jobs.find((job) => job.id === selectedJobId) || null;
+    jobsForSelectedDate.find((job) => job.id === selectedJobId) || null;
 
-  // 달력에서 날짜 선택 → 한톡도 같은 날짜를 기준으로 작동
-  const handleSelectDate = (dateStr) => {
+  // 달력에서 날짜 클릭
+  const handleChangeDate = (dateStr) => {
     setSelectedDate(dateStr);
-    const firstJob = jobs.find((job) => job.date === dateStr);
-    setSelectedJobId(firstJob ? firstJob.id : null);
+    setSelectedJobId(null); // 날짜 바꾸면 선택 현장 초기화
   };
 
-  // ✅ 새 현장 등록 (한톡에서만 호출)
-  const handleCreateJob = (jobInput) => {
-    const newJob = {
-      id: Date.now().toString(),
-      date: jobInput.date || selectedDate,
-      company: jobInput.company || "",
-      title: jobInput.title || jobInput.company || "제목 없음",
-      memo: jobInput.memo || "",
-      amounts: {
-        head: Number(jobInput.head || 0),
-        hands: Number(jobInput.hands || 0),
-        extra: Number(jobInput.extra || 0),
-      },
-      messages: [],
-    };
-
-    setJobs((prev) => [...prev, newJob]);
-    setSelectedDate(newJob.date);
-    setSelectedJobId(newJob.id);
+  // 새 현장 등록 (한톡에서만 호출)
+  const handleCreateJob = (jobData) => {
+    setJobsByDate((prev) => {
+      const list = prev[selectedDate] || [];
+      const newJob = {
+        id: Date.now(), // 간단 ID
+        ...jobData,
+      };
+      return {
+        ...prev,
+        [selectedDate]: [...list, newJob],
+      };
+    });
   };
 
-  // ✅ 기존 현장 수정 (한톡에서만 호출)
-  const handleUpdateJob = (jobInput) => {
-    setJobs((prev) =>
-      prev.map((job) =>
-        job.id === jobInput.id
-          ? {
-              ...job,
-              date: jobInput.date || job.date,
-              company: jobInput.company ?? job.company,
-              title:
-                jobInput.title ||
-                jobInput.company ||
-                job.title,
-              memo: jobInput.memo ?? job.memo,
-              amounts: {
-                head: Number(jobInput.head ?? job.amounts?.head || 0),
-                hands: Number(jobInput.hands ?? job.amounts?.hands || 0),
-                extra: Number(jobInput.extra ?? job.amounts?.extra || 0),
-              },
-            }
-          : job
-      )
-    );
-    setSelectedJobId(jobInput.id);
-    if (jobInput.date) {
-      setSelectedDate(jobInput.date);
-    }
-  };
-
-  // ✅ 한톡 채팅/메모 추가 (한톡에서만 호출)
-  const handleAddMessage = (jobId, text) => {
-    if (!text.trim()) return;
-    setJobs((prev) =>
-      prev.map((job) =>
-        job.id === jobId
-          ? {
-              ...job,
-              messages: [
-                ...(job.messages || []),
-                {
-                  id: `${jobId}-${Date.now()}`,
-                  text,
-                  time: new Date().toLocaleTimeString(),
-                },
-              ],
-            }
-          : job
-      )
-    );
+  // 기존 현장 수정
+  const handleUpdateJob = (updatedFields) => {
+    if (!selectedJobId) return;
+    setJobsByDate((prev) => {
+      const list = prev[selectedDate] || [];
+      const newList = list.map((job) =>
+        job.id === selectedJobId ? { ...job, ...updatedFields } : job
+      );
+      return {
+        ...prev,
+        [selectedDate]: newList,
+      };
+    });
   };
 
   return (
-    <div className="app-root">
-      <header className="app-header">
-        <div className="logo-area">
-          <span className="logo-main">HANPLE ERP</span>
-          <span className="logo-sub">
-            달력 + 한톡 + 정산 통합 (입력·수정은 한톡 전용)
-          </span>
-        </div>
-        <div className="header-right">
-          <span className="header-tag">v1.2 – Chat-Driven 입력 방식</span>
-        </div>
-      </header>
+    <div className="app-container">
+      {/* 왼쪽 : 달력 + 날짜별 현장 제목 리스트 */}
+      <CalendarView
+        selectedDate={selectedDate}
+        jobs={jobsForSelectedDate}
+        onChangeDate={handleChangeDate}
+        onSelectJob={setSelectedJobId}
+      />
 
-      <main className="app-main">
-        <section className="calendar-section">
-          <CalendarView
-            selectedDate={selectedDate}
-            jobs={jobs}
-            onSelectDate={handleSelectDate}
-            onSelectJob={setSelectedJobId}
-          />
-        </section>
-
-        <section className="chat-section">
-          <TaskChat
-            selectedDate={selectedDate}
-            jobsForDate={jobsForSelectedDate}
-            selectedJob={selectedJob}
-            onSelectJob={setSelectedJobId}
-            onCreateJob={handleCreateJob}
-            onUpdateJob={handleUpdateJob}
-            onAddMessage={handleAddMessage}
-          />
-        </section>
-      </main>
+      {/* 오른쪽 : 카톡 스타일 한톡 화면 */}
+      <TaskChat
+        selectedDate={selectedDate}
+        selectedJob={selectedJob}
+        hasJobs={jobsForSelectedDate.length > 0}
+        onCreateJob={handleCreateJob}
+        onUpdateJob={handleUpdateJob}
+      />
     </div>
   );
 }
