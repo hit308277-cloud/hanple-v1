@@ -1,58 +1,75 @@
-import React, { useState } from 'react'
-import CalendarView from './CalendarView'
-import TaskChat from './TaskChat'
+import React, { useState } from 'react';
+import CalendarView from './CalendarView';
+import TaskChat from './TaskChat';
 
 const tabs = [
-  { id: 'calendar', label: '달력' },
-  { id: 'chat', label: '업무톡' },
-  { id: 'site', label: 'SITE(우리집관리)' }
-]
+  { id: 'calendar', label: '업체 달력' },
+  { id: 'chat', label: '업무톡(한톡)' },
+  { id: 'site', label: 'SITE / 홈케어' },
+];
 
 export default function App() {
-  const [active, setActive] = useState('calendar')
+  const [activeTab, setActiveTab] = useState('calendar');
+  const [isLeftOpen, setIsLeftOpen] = useState(true);
+
+  const renderMain = () => {
+    if (activeTab === 'chat') return <TaskChat />;
+
+    if (activeTab === 'site') {
+      return (
+        <div style={{ padding: 16, fontSize: 14 }}>
+          <h2 style={{ fontSize: 18, marginBottom: 12 }}>SITE / 홈케어</h2>
+          <p>홈케어(우리집관리) 화면은 여기서 점점 살을 붙여 나가면 됩니다.</p>
+        </div>
+      );
+    }
+
+    // 기본은 달력
+    return <CalendarView />;
+  };
 
   return (
-    <div className="app-root">
+    <div className="app-container">
       <header className="app-header">
         <div className="logo">
           <span className="logo-mark">HANPLE</span>
-          <span className="logo-sub">현장 중심 ERP v1</span>
+          <span className="logo-sub">한플 ERP v1.0</span>
+        </div>
+
+        <div className="hts-toolbar">
+          <button
+            className="hts-toggle"
+            type="button"
+            onClick={() => setIsLeftOpen(prev => !prev)}
+          >
+            {isLeftOpen ? '◀ 기능 패널 접기' : '▶ 기능 패널 펼치기'}
+          </button>
         </div>
       </header>
 
-      <main className="app-main">
-        <nav className="tabs">
-          {tabs.map(t => (
-            <button
-              key={t.id}
-              className={`tab ${active === t.id ? 'tab-active' : ''}`}
-              onClick={() => setActive(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
+      <div className="app-body">
+        {isLeftOpen && (
+          <aside className="left-panel">
+            <div className="left-panel-title">기능 선택 (HTS 티어)</div>
+            <nav className="tabs">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`tab-btn ${activeTab === tab.id ? 'tab-active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </aside>
+        )}
 
-        <section className="tab-panel">
-          {active === 'calendar' && <CalendarView />}
-          {active === 'chat' && <TaskChat />}
-          {active === 'site' && (
-            <div className="placeholder">
-              <h2>우리집관리 / SITE</h2>
-              <p>여기는 나중에 공사현장, 우리집 자산관리 화면을 붙이면 됩니다.</p>
-              <ul>
-                <li>현장별 사진 / 동영상</li>
-                <li>계약서, 견적서 링크</li>
-                <li>입금·정산 내역 요약</li>
-              </ul>
-            </div>
-          )}
+        <section className="right-panel">
+          {renderMain()}
         </section>
-      </main>
-
-      <footer className="app-footer">
-        한플 기본 뼈대 v1 · 이 코드 위에 기능을 계속 붙여가면 됩니다.
-      </footer>
+      </div>
     </div>
-  )
+  );
 }
