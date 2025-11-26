@@ -16,9 +16,8 @@ const INIT_FORM = {
 
 const STATUS_OPTIONS = ["상담", "계약", "시공예정", "시공완료", "정산완료"];
 
-function CalendarView() {
+function CalendarView({ jobs, setJobs }) {
   const [form, setForm] = useState(INIT_FORM);
-  const [jobs, setJobs] = useState([]);
   const [editingId, setEditingId] = useState(null); // 수정 중인 일정 id
 
   // 입력 변경 처리
@@ -50,10 +49,11 @@ function CalendarView() {
       );
       setEditingId(null);
     } else {
-      // 신규 등록
+      // 신규 등록 (초기에는 settlement 정보 없음)
       const newJob = {
         id: Date.now(),
         ...form,
+        settlement: null,
       };
       setJobs((prev) => [newJob, ...prev]);
     }
@@ -130,7 +130,7 @@ function CalendarView() {
       <h2>📅 한플 일정 / 시공현장</h2>
       <p className="panel-sub">
         상담 → 계약 완료된 건을 이 화면에서 시공 일정으로 등록·수정·복사·삭제하고,
-        시공팀을 배정합니다. (나중에 실제 달력·정산·시공완료와 연결됩니다)
+        시공팀을 배정합니다. (상태를 ‘시공완료’로 바꾸면 정산 화면에 나타납니다)
       </p>
 
       {/* 일정 등록 / 수정 폼 */}
