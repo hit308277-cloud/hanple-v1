@@ -227,3 +227,82 @@ body, html {
   font-size: 12px;
   color: #374151;
 }
+.editing-badge {
+  font-size: 12px;
+  color: #b45309;
+  background: #fffbeb;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-right: 8px;
+  border: 1px solid #fbbf24;
+}
+
+/* 일정 카드 하단 버튼 영역 */
+.job-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.secondary-btn,
+.danger-btn {
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #e5e7eb;
+}
+
+.danger-btn {
+  border-color: #f87171;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.danger-btn:hover {
+  background: #fee2e2;
+}
+
+/* 상태 뱃지 */
+.status-badge {
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+}
+
+.status-상담 {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.status-계약 {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+.status-시공예정 {
+  background: #fef3c7;
+  border-color: #facc15;
+  color: #92400e;
+}
+
+.status-시공완료 {
+  background: #dcfce7;
+  border-color: #22c55e;
+  color: #166534;
+}
+
+.status-정산완료 {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  color: #374151;
+}
