@@ -430,3 +430,73 @@ body, html {
 .settle-field { ... }
 .settle-footer { ... }
 .settle-done-badge { ... }
+/* 업무톡 / 견적 탭 */
+.task-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-header h2 {
+  margin-bottom: 4px;
+}
+
+.task-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tab-btn {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 5px 12px;
+  font-size: 12px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.chat-placeholder {
+  font-size: 13px;
+  color: #374151;
+}
+
+/* 견적 레이아웃 */
+.estimate-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.estimate-form {
+  flex: 1;
+  min-width: 260px;
+}
+
+.estimate-preview {
+  flex: 1;
+  min-width: 260px;
+}
+
+.estimate-box {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  background: #f9fafb;
+  font-size: 12px;
+}
+
+.estimate-list-item {
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
+  margin-top: 4px;
+  background: #ffffff;
+  font-size: 12px;
+}
