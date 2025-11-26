@@ -500,3 +500,55 @@ body, html {
   background: #ffffff;
   font-size: 12px;
 }
+/* 계약 / 견적 카드 */
+.contract-card {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #f9fafb;
+}
+
+.contract-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.contract-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.contract-sub {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.contract-date {
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.contract-status-select {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: white;
+}
+
+.contract-memo {
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.contract-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 11px;
+}
