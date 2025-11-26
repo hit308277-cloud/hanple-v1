@@ -185,3 +185,23 @@ function App() {
 }
 
 export default App;
+// (예시) App.tsx 또는 Router.tsx
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import EstimateCreatePage from "./pages/EstimateCreatePage"; // 새로 만들 페이지
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* 기존 라우트들 */}
+        {/* 예: <Route path="/worktalk" element={<WorkTalkPage />} /> */}
+
+        {/* 👇 새로 추가 */}
+        <Route path="/worktalk/estimate/new" element={<EstimateCreatePage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
