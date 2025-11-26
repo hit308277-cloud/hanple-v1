@@ -201,3 +201,187 @@ body {
   background: #111827;
   color: #ffffff;
 }
+/* ============================
+   📌 HTS 레이아웃 (달력 + 우측 패널)
+============================ */
+
+.calendar-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* 왼쪽 달력 영역 */
+.calendar-main {
+  flex: 2;
+}
+
+.calendar-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.calendar-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.calendar-sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 요일 헤더 */
+.calendar-week-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.calendar-week-cell {
+  text-align: center;
+}
+
+/* 날짜 그리드 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-cell {
+  padding: 10px 0;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.calendar-cell:hover {
+  background: #eef2ff;
+  border-color: #4f46e5;
+}
+
+.calendar-today {
+  border-color: #111827;
+  font-weight: 700;
+}
+
+.calendar-selected {
+  background: #111827;
+  color: #ffffff;
+}
+
+/* 오른쪽 일정 패널 */
+.calendar-side {
+  flex: 1.2;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.side-header {
+  margin-bottom: 12px;
+}
+
+.side-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.side-desc {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.side-events {
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.side-empty {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.side-event-card {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.event-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.event-memo {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* 일정 입력 폼 */
+.side-form {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.side-form-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.side-input,
+.side-textarea {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+  resize: vertical;
+}
+
+.side-input:focus,
+.side-textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 1px rgba(79,70,229,0.3);
+}
+
+.side-btn {
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 6px;
+  border: none;
+  background: #111827;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.side-btn:hover {
+  background: #030712;
+}
+
+/* 모바일에서 위·아래로 쌓이게 */
+@media (max-width: 900px) {
+  .calendar-layout {
+    flex-direction: column;
+  }
+}
