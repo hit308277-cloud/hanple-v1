@@ -306,3 +306,117 @@ body, html {
   border-color: #9ca3af;
   color: #374151;
 }
+/* 정산 카드 */
+.settle-card {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #f9fafb;
+}
+
+.settle-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.settle-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settle-sub {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.settle-status-select {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: white;
+}
+
+.settle-body {
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.settle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.settle-field {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.settle-field.full {
+  flex: 1 1 100%;
+}
+
+.settle-field label {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.settle-field input,
+.settle-field select,
+.settle-field textarea {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.settle-field input:focus,
+.settle-field select:focus,
+.settle-field textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.checkbox-field {
+  justify-content: flex-end;
+}
+
+.checkbox-field label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.settle-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.settle-info {
+  color: #6b7280;
+}
+
+.settle-done-badge {
+  background: #dcfce7;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #166534;
+  border: 1px solid #22c55e;
+  font-size: 11px;
+}
