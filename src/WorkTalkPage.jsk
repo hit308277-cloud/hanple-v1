@@ -9,10 +9,10 @@ function WorkTalkPage() {
         <div>
           <div className="section-title">오늘 한눈에 보기</div>
           <div className="section-sub">
-            상담 · 시공 · 정산까지, 배민 스타일로 한 화면에서 확인합니다.
+            상담 · 시공 · 정산까지 오늘 해야 할 일을 배민 스타일로 모아서 보여줍니다.
           </div>
         </div>
-        <button className="btn btn-primary">새 채팅방 만들기</button>
+        <button className="btn btn-outline">전체 일정 보기</button>
       </div>
 
       <div className="card-grid-3" style={{ marginBottom: 16 }}>
@@ -23,15 +23,15 @@ function WorkTalkPage() {
           </div>
           <ul className="list-simple">
             <li>
-              <span>천안 두정동, 시스템에어컨 3대</span>
+              <span>천안 두정푸르지오 · 시스템에어컨 3대</span>
               <span>상담 대기</span>
             </li>
             <li>
-              <span>용인 수지구, 올인원 4대</span>
+              <span>광명 철산도덕파크 · 올인원 4대</span>
               <span>견적 발송</span>
             </li>
             <li>
-              <span>서울 마곡동, 사무실 이전</span>
+              <span>서울 마곡동 · 사무실 이전</span>
               <span>시공 예약</span>
             </li>
           </ul>
@@ -40,11 +40,11 @@ function WorkTalkPage() {
         <div className="card">
           <div className="card-header">
             <div className="card-title">오늘 시공 일정</div>
-            <span className="card-sub">시공팀과 공유되는 일정입니다.</span>
+            <span className="card-sub">시공팀 단톡방과 자동 연동 예정</span>
           </div>
           <ul className="list-simple">
             <li>
-              <span>09:00 · 천안 두정푸르지오</span>
+              <span>09:00 · 천안 두정역푸르지오</span>
               <span className="badge-status badge-gray">선배관</span>
             </li>
             <li>
