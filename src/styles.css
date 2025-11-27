@@ -1,10 +1,333 @@
+/* ========= 공통 설정 ========= */
+:root {
+  --hanple-mint: #2ac1bc;
+  --hanple-mint-light: #e6f8f7;
+  --hanple-dark: #222; 
+  --hanple-gray: #909090;
+  --hanple-border: #ececec;
+  --hanple-bg: #f7f7f7;
+  --hanple-radius-lg: 18px;
+  --hanple-radius-md: 12px;
+  --hanple-shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.04);
+  --hanple-transition: 0.18s ease-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Noto Sans KR", sans-serif;
+  background-color: var(--hanple-bg);
+  color: var(--hanple-dark);
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 16px;
+/* ========= 전체 레이아웃 ========= */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* 왼쪽 사이드바 */
+.app-sidebar {
+  width: 230px;
+  background: #ffffff;
+  border-right: 1px solid var(--hanple-border);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.app-logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo-pill {
+  background: var(--hanple-mint);
+  color: white;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.app-menu-group-title {
+  font-size: 11px;
+  color: var(--hanple-gray);
+  margin-bottom: 6px;
+}
+
+.app-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-menu-item {
+  padding: 9px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--hanple-transition);
+}
+
+.app-menu-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-menu-item:hover {
+  background: var(--hanple-mint-light);
+  color: var(--hanple-dark);
+}
+
+.app-menu-item.active {
+  background: var(--hanple-mint);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 우측 본문 영역 */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단 헤더 */
+.app-header {
+  height: 60px;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--hanple-border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--hanple-gray);
+}
+
+.badge-pill {
+  padding: 4px 10px;
+  background: var(--hanple-mint-light);
+  color: var(--hanple-mint);
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+/* 메인 컨텐츠 */
+.app-content {
+  padding: 24px 28px 32px;
+}
+
+/* ========= 카드 & 섹션 ========= */
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.section-sub {
+  font-size: 12px;
+  color: var(--hanple-gray);
+}
+
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    flex-direction: column;
+  }
+  .app-sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-right: none;
+    border-bottom: 1px solid var(--hanple-border);
+  }
+  .card-grid-2,
+  .card-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--hanple-radius-lg);
+  box-shadow: var(--hanple-shadow-soft);
+  padding: 18px 18px 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-sub {
+  font-size: 12px;
+  color: var(--hanple-gray);
+}
+
+.card-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ========= 버튼 스타일 ========= */
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--hanple-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--hanple-mint);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #22a49f;
+}
+
+.btn-outline {
+  background: #fff;
+  color: var(--hanple-mint);
+  border: 1px solid var(--hanple-mint-light);
+}
+
+.btn-outline:hover {
+  background: var(--hanple-mint-light);
+}
+
+/* ========= 간단 리스트 / 테이블 ========= */
+
+.list-simple {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+
+.list-simple li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--hanple-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-simple li:last-child {
+  border-bottom: none;
+}
+
+.badge-status {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.badge-green {
+  background: var(--hanple-mint-light);
+  color: var(--hanple-mint);
+}
+
+.badge-gray {
+  background: #f0f0f0;
+  color: #777;
+}
+
+/* ========= 폼 / 인풋 ========= */
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-input,
+.form-textarea {
+  padding: 9px 10px;
+  border-radius: var(--hanple-radius-md);
+  border: 1px solid var(--hanple-border);
+  font-size: 13px;
+  outline: none;
+  transition: var(--hanple-transition);
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--hanple-mint);
+  box-shadow: 0 0 0 1px var(--hanple-mint-light);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
 }
