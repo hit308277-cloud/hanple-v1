@@ -1,6 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import WorkTalkPage from "./WorkTalkPage";
 import EstimateNew from "./EstimateNew";
+import CalendarView from "./CalendarView";
+import EstimateDashboard from "./EstimateDashboard";
+import LedgerView from "./LedgerView";
+import WarehouseView from "./WarehouseView";
+import SettingsView from "./SettingsView";
 
 function Layout({ children }) {
   const location = useLocation();
@@ -8,14 +13,25 @@ function Layout({ children }) {
 
   const isActive = (pathPrefix) => location.pathname.startsWith(pathPrefix);
 
+  const titleMap = () => {
+    if (location.pathname.startsWith("/worktalk/estimate")) return "견적서 작성";
+    if (location.pathname.startsWith("/worktalk")) return "업무톡";
+    if (location.pathname.startsWith("/calendar")) return "일정 / 시공현장";
+    if (location.pathname.startsWith("/estimate")) return "견적 관리";
+    if (location.pathname.startsWith("/ledger")) return "계약 · 정산";
+    if (location.pathname.startsWith("/warehouse")) return "창고 / 재고";
+    if (location.pathname.startsWith("/settings")) return "설정";
+    return "HANPLE ERP";
+  };
+
   return (
     <div className="app-shell">
-      {/* 사이드바 */}
+      {/* 왼쪽 사이드바 */}
       <aside className="app-sidebar">
         <div>
           <div className="app-logo">
             HANPLE
-            <span className="app-logo-pill">ERP · 업무톡</span>
+            <span className="app-logo-pill">배민 스타일 ERP</span>
           </div>
         </div>
 
@@ -30,25 +46,37 @@ function Layout({ children }) {
             </div>
             <div
               className={`app-menu-item ${isActive("/calendar") ? "active" : ""}`}
-              onClick={() => alert("캘린더 화면은 추후 연결 예정입니다.")} // 자리만 잡기
+              onClick={() => navigate("/calendar")}
             >
               <span>일정 / 시공현장</span>
             </div>
             <div
-              className={`app-menu-item ${isActive("/ledger") ? "active" : ""}`}
-              onClick={() => alert("정산 화면은 추후 연결 예정입니다.")}
+              className={`app-menu-item ${isActive("/estimate") ? "active" : ""}`}
+              onClick={() => navigate("/estimate")}
             >
-              <span>정산 / 매출</span>
+              <span>견적 관리</span>
+            </div>
+            <div
+              className={`app-menu-item ${isActive("/ledger") ? "active" : ""}`}
+              onClick={() => navigate("/ledger")}
+            >
+              <span>계약 · 정산</span>
+            </div>
+            <div
+              className={`app-menu-item ${isActive("/warehouse") ? "active" : ""}`}
+              onClick={() => navigate("/warehouse")}
+            >
+              <span>창고 / 재고</span>
             </div>
           </div>
         </div>
 
         <div>
-          <div className="app-menu-group-title">설정</div>
+          <div className="app-menu-group-title">관리</div>
           <div className="app-menu">
             <div
               className={`app-menu-item ${isActive("/settings") ? "active" : ""}`}
-              onClick={() => alert("설정 화면은 추후 연결 예정입니다.")}
+              onClick={() => navigate("/settings")}
             >
               <span>설정 / 회사정보</span>
             </div>
@@ -56,22 +84,18 @@ function Layout({ children }) {
         </div>
       </aside>
 
-      {/* 메인 영역 */}
+      {/* 우측 메인 */}
       <div className="app-main">
-        {/* 헤더 */}
+        {/* 상단바 */}
         <header className="app-header">
-          <div className="app-header-title">
-            {location.pathname.startsWith("/worktalk")
-              ? "업무톡 (배민 스타일 한플)"
-              : "HANPLE ERP"}
-          </div>
+          <div className="app-header-title">{titleMap()}</div>
           <div className="app-header-right">
             <span className="badge-pill">한성시스템에어컨(주)</span>
             <span>관리자 · 정성권</span>
           </div>
         </header>
 
-        {/* 본문 */}
+        {/* 내용 */}
         <main className="app-content">{children}</main>
       </div>
     </div>
@@ -102,6 +126,46 @@ function AppRoutes() {
         element={
           <Layout>
             <EstimateNew />
+          </Layout>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <Layout>
+            <CalendarView />
+          </Layout>
+        }
+      />
+      <Route
+        path="/estimate"
+        element={
+          <Layout>
+            <EstimateDashboard />
+          </Layout>
+        }
+      />
+      <Route
+        path="/ledger"
+        element={
+          <Layout>
+            <LedgerView />
+          </Layout>
+        }
+      />
+      <Route
+        path="/warehouse"
+        element={
+          <Layout>
+            <WarehouseView />
+          </Layout>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <Layout>
+            <SettingsView />
           </Layout>
         }
       />
