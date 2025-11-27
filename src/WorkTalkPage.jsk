@@ -1,1 +1,12 @@
+import WorkTalkHeader from "./WorkTalkHeader";
 
+function WorkTalkPage() {
+  return (
+    <div style={{ padding: 20 }}>
+      <WorkTalkHeader />
+      <h2>업무톡 메인 화면</h2>
+    </div>
+  );
+}
+
+export default WorkTalkPage;
