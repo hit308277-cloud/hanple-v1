@@ -2,10 +2,83 @@ import WorkTalkHeader from "./WorkTalkHeader";
 
 function WorkTalkPage() {
   return (
-    <div style={{ padding: 20 }}>
+    <>
       <WorkTalkHeader />
-      <h2>업무톡 메인 화면</h2>
-    </div>
+
+      <div className="section-title-row">
+        <div>
+          <div className="section-title">오늘 한눈에 보기</div>
+          <div className="section-sub">
+            상담 · 시공 · 정산까지, 배민 스타일로 한 화면에서 확인합니다.
+          </div>
+        </div>
+        <button className="btn btn-primary">새 채팅방 만들기</button>
+      </div>
+
+      <div className="card-grid-3" style={{ marginBottom: 16 }}>
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">오늘 상담 요청</div>
+            <span className="badge-status badge-green">실시간</span>
+          </div>
+          <ul className="list-simple">
+            <li>
+              <span>천안 두정동, 시스템에어컨 3대</span>
+              <span>상담 대기</span>
+            </li>
+            <li>
+              <span>용인 수지구, 올인원 4대</span>
+              <span>견적 발송</span>
+            </li>
+            <li>
+              <span>서울 마곡동, 사무실 이전</span>
+              <span>시공 예약</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">오늘 시공 일정</div>
+            <span className="card-sub">시공팀과 공유되는 일정입니다.</span>
+          </div>
+          <ul className="list-simple">
+            <li>
+              <span>09:00 · 천안 두정푸르지오</span>
+              <span className="badge-status badge-gray">선배관</span>
+            </li>
+            <li>
+              <span>13:30 · 광명 철산도덕파크</span>
+              <span className="badge-status badge-gray">제품설치</span>
+            </li>
+            <li>
+              <span>16:00 · 마곡 힐스테이트</span>
+              <span className="badge-status badge-gray">AS 점검</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">오늘 정산 요약</div>
+          </div>
+          <ul className="list-simple">
+            <li>
+              <span>계약 예정 금액</span>
+              <strong>18,200,000원</strong>
+            </li>
+            <li>
+              <span>입금 예정</span>
+              <strong>7,500,000원</strong>
+            </li>
+            <li>
+              <span>시공팀 지급 예정</span>
+              <strong>4,300,000원</strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </>
   );
 }
 
