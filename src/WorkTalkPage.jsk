@@ -1,84 +1,162 @@
-import WorkTalkHeader from "./WorkTalkHeader";
+// src/WorkTalkPage.jsx
+import React, { useState } from "react";
+import "./style.css";
+
+const TABS = [
+  "전체",
+  "상담대기",
+  "계약완료",
+  "시공대기",
+  "시공중",
+  "완료",
+  "AS",
+];
+
+const FILTERS = ["오늘", "이번주", "이번달", "전체"];
+
+const MOCK_JOBS = [
+  {
+    id: 1,
+    status: "상담대기",
+    title: "두정푸르지오 107동 1105호",
+    customer: "최경남",
+    memo: "LG 올인원 다배관 / 인테리어 포함 2일 공사",
+    date: "12/01(월) 오후 2시",
+    tag: "신규상담",
+  },
+  {
+    id: 2,
+    status: "시공대기",
+    title: "철산도덕파크 1단지 101동 1603호",
+    customer: "최순호",
+    memo: "삼성 무풍 다배관 / 선배관 완료, 본공사 대기",
+    date: "12/02(화) 오전 9시",
+    tag: "선배관완료",
+  },
+  {
+    id: 3,
+    status: "완료",
+    title: "회기힐스테이트 105동 803호",
+    customer: "신통신",
+    memo: "LG 올인원 / 하루공사, 시공완료 서명 받음",
+    date: "11/27(목) 완료",
+    tag: "시공완료",
+  },
+];
 
 function WorkTalkPage() {
+  const [activeTab, setActiveTab] = useState("전체");
+  const [activeFilter, setActiveFilter] = useState("오늘");
+
+  const filteredJobs = MOCK_JOBS.filter((job) => {
+    if (activeTab === "전체") return true;
+    return job.status === activeTab;
+  });
+
+  const handleEstimateClick = () => {
+    // 예전처럼 견적 페이지로 이동 (라우터 쓰고 있으면 그대로 동작)
+    try {
+      window.location.href = "/worktalk/estimate/new";
+    } catch (e) {
+      console.log("견적서 페이지 이동 에러", e);
+    }
+  };
+
   return (
-    <>
-      <WorkTalkHeader />
-
-      <div className="section-title-row">
-        <div>
-          <div className="section-title">오늘 한눈에 보기</div>
-          <div className="section-sub">
-            상담 · 시공 · 정산까지 오늘 해야 할 일을 배민 스타일로 모아서 보여줍니다.
+    <div className="wt-page">
+      {/* 상단 헤더 (배민 느낌) */}
+      <header className="wt-header">
+        <div className="wt-header-top">
+          <div>
+            <div className="wt-brand">한플 업무톡</div>
+            <div className="wt-store">한성시스템에어컨</div>
+          </div>
+          <div className="wt-header-right">
+            <div className="wt-today-label">오늘 접수</div>
+            <div className="wt-today-count">3건</div>
           </div>
         </div>
-        <button className="btn btn-outline">전체 일정 보기</button>
+        <div className="wt-header-bottom">
+          <span>오늘 시공 2건 · AS 1건</span>
+        </div>
+      </header>
+
+      {/* 상태 탭 (배민 카테고리처럼) */}
+      <div className="wt-tabs">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            className={
+              "wt-tab" + (activeTab === tab ? " wt-tab--active" : "")
+            }
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      <div className="card-grid-3" style={{ marginBottom: 16 }}>
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">오늘 상담 요청</div>
-            <span className="badge-status badge-green">실시간</span>
-          </div>
-          <ul className="list-simple">
-            <li>
-              <span>천안 두정푸르지오 · 시스템에어컨 3대</span>
-              <span>상담 대기</span>
-            </li>
-            <li>
-              <span>광명 철산도덕파크 · 올인원 4대</span>
-              <span>견적 발송</span>
-            </li>
-            <li>
-              <span>서울 마곡동 · 사무실 이전</span>
-              <span>시공 예약</span>
-            </li>
-          </ul>
+      {/* 필터 + 견적 버튼 */}
+      <div className="wt-toolbar">
+        <div className="wt-filters">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              className={
+                "wt-filter" + (activeFilter === f ? " wt-filter--active" : "")
+              }
+              onClick={() => setActiveFilter(f)}
+            >
+              {f}
+            </button>
+          ))}
         </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">오늘 시공 일정</div>
-            <span className="card-sub">시공팀 단톡방과 자동 연동 예정</span>
-          </div>
-          <ul className="list-simple">
-            <li>
-              <span>09:00 · 천안 두정역푸르지오</span>
-              <span className="badge-status badge-gray">선배관</span>
-            </li>
-            <li>
-              <span>13:30 · 광명 철산도덕파크</span>
-              <span className="badge-status badge-gray">제품설치</span>
-            </li>
-            <li>
-              <span>16:00 · 마곡 힐스테이트</span>
-              <span className="badge-status badge-gray">AS 점검</span>
-            </li>
-          </ul>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">오늘 정산 요약</div>
-          </div>
-          <ul className="list-simple">
-            <li>
-              <span>계약 예정 금액</span>
-              <strong>18,200,000원</strong>
-            </li>
-            <li>
-              <span>입금 예정</span>
-              <strong>7,500,000원</strong>
-            </li>
-            <li>
-              <span>시공팀 지급 예정</span>
-              <strong>4,300,000원</strong>
-            </li>
-          </ul>
-        </div>
+        <button
+          type="button"
+          className="wt-estimate-btn"
+          onClick={handleEstimateClick}
+        >
+          + 견적서 작성
+        </button>
       </div>
-    </>
+
+      {/* 리스트 영역 */}
+      <div className="wt-list">
+        {filteredJobs.map((job) => (
+          <div key={job.id} className="wt-card">
+            <div className="wt-card-top">
+              <span className="wt-card-status">{job.status}</span>
+              <span className="wt-card-tag">{job.tag}</span>
+            </div>
+            <div className="wt-card-title">{job.title}</div>
+            <div className="wt-card-row">
+              <span className="wt-card-label">고객</span>
+              <span className="wt-card-value">{job.customer}</span>
+            </div>
+            <div className="wt-card-row">
+              <span className="wt-card-label">내용</span>
+              <span className="wt-card-value">{job.memo}</span>
+            </div>
+            <div className="wt-card-footer">
+              <span className="wt-card-date">{job.date}</span>
+              <button type="button" className="wt-card-btn">
+                상세보기
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {filteredJobs.length === 0 && (
+          <div className="wt-empty">
+            선택한 상태의 일정이 없습니다.
+            <br />
+            상단의 탭이나 기간을 바꿔 보세요.
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
