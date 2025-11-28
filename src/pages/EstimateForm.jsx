@@ -1,0 +1,1 @@
+export default function EstimateForm(){return(<div>견적서</div>);}
