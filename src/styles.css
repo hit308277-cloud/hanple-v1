@@ -1,345 +1,232 @@
-/* ========= 공통 설정 ========= */
-:root {
-  --hanple-mint: #2ac1bc;
-  --hanple-mint-light: #e6f8f7;
-  --hanple-dark: #222;
-  --hanple-gray: #909090;
-  --hanple-border: #ececec;
-  --hanple-bg: #f7f7f7;
-  --hanple-radius-lg: 18px;
-  --hanple-radius-md: 12px;
-  --hanple-shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.04);
-  --hanple-transition: 0.18s ease-out;
-}
-
-* {
-  box-sizing: border-box;
-}
-
+/* 전체 기본값 */
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
-    "Noto Sans KR", sans-serif;
-  background-color: var(--hanple-bg);
-  color: var(--hanple-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", system-ui,
+    sans-serif;
+  background: #f5f7fa;
+  color: #222;
 }
 
-/* ========= 전체 레이아웃 ========= */
-
-.app-shell {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* 왼쪽 사이드바 */
-.app-sidebar {
-  width: 230px;
-  background: #ffffff;
-  border-right: 1px solid var(--hanple-border);
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.app-logo {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.app-logo-pill {
-  background: var(--hanple-mint);
-  color: white;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-}
-
-.app-menu-group-title {
-  font-size: 11px;
-  color: var(--hanple-gray);
-  margin-bottom: 6px;
-}
-
-.app-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.app-menu-item {
-  padding: 9px 12px;
-  border-radius: 999px;
-  font-size: 14px;
-  color: #555;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: var(--hanple-transition);
-}
-
-.app-menu-item span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.app-menu-item:hover {
-  background: var(--hanple-mint-light);
-  color: var(--hanple-dark);
-}
-
-.app-menu-item.active {
-  background: var(--hanple-mint);
-  color: #fff;
-  font-weight: 600;
-}
-
-/* 우측 본문 영역 */
-.app-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+/* 한플 업무톡 전체 래퍼 */
+.wt-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
 }
 
 /* 상단 헤더 */
-.app-header {
-  height: 60px;
-  padding: 0 28px;
-  border-bottom: 1px solid var(--hanple-border);
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.app-header-title {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.app-header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--hanple-gray);
-}
-
-.badge-pill {
-  padding: 4px 10px;
-  background: var(--hanple-mint-light);
-  color: var(--hanple-mint);
-  border-radius: 999px;
-  font-size: 11px;
-}
-
-/* 메인 컨텐츠 */
-.app-content {
-  padding: 24px 28px 32px;
-}
-
-/* ========= 카드 & 섹션 ========= */
-
-.section-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.wt-header {
+  background: linear-gradient(135deg, #2ac1bc, #3dd5c1);
+  border-radius: 18px;
+  padding: 16px 18px 14px;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   margin-bottom: 14px;
 }
 
-.section-title {
+.wt-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wt-brand {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wt-store {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.wt-header-right {
+  text-align: right;
+}
+
+.wt-today-label {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.wt-today-count {
   font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.5px;
 }
 
-.section-sub {
+.wt-header-bottom {
+  margin-top: 10px;
   font-size: 12px;
-  color: var(--hanple-gray);
+  opacity: 0.95;
 }
 
-.card-grid-2 {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 16px;
-}
-
-.card-grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-@media (max-width: 960px) {
-  .app-shell {
-    flex-direction: column;
-  }
-  .app-sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    border-right: none;
-    border-bottom: 1px solid var(--hanple-border);
-  }
-  .card-grid-2,
-  .card-grid-3 {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-.card {
-  background: #fff;
-  border-radius: var(--hanple-radius-lg);
-  box-shadow: var(--hanple-shadow-soft);
-  padding: 18px 18px 16px;
-}
-
-.card-header {
+/* 상단 탭 (배민 카테고리) */
+.wt-tabs {
   display: flex;
-  justify-content: space-between;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 4px 2px 8px;
+  margin-bottom: 6px;
+}
+
+.wt-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.wt-tab {
+  flex-shrink: 0;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #555;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+
+.wt-tab--active {
+  background: #222;
+  color: #fff;
+}
+
+/* 필터 + 견적 버튼 라인 */
+.wt-toolbar {
+  display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 6px 0 10px;
 }
 
-.card-title {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.card-sub {
-  font-size: 12px;
-  color: var(--hanple-gray);
-}
-
-.card-chips {
+.wt-filters {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
 }
 
-/* ========= 버튼 ========= */
-
-.btn {
+.wt-filter {
   border: none;
+  font-size: 12px;
+  padding: 6px 10px;
   border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 14px;
+  background: #e8edf2;
+  color: #555;
   cursor: pointer;
-  transition: var(--hanple-transition);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.btn-primary {
-  background: var(--hanple-mint);
+.wt-filter--active {
+  background: #2ac1bc;
+  color: #fff;
+}
+
+.wt-estimate-btn {
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: #2ac1bc;
   color: #fff;
   font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.btn-primary:hover {
-  background: #22a49f;
+/* 리스트 */
+.wt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
 }
 
-.btn-outline {
-  background: #fff;
-  color: var(--hanple-mint);
-  border: 1px solid var(--hanple-mint-light);
+.wt-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px 14px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.btn-outline:hover {
-  background: var(--hanple-mint-light);
-}
-
-/* ========= 리스트 & 뱃지 ========= */
-
-.list-simple {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 13px;
-}
-
-.list-simple li {
-  padding: 6px 0;
-  border-bottom: 1px solid var(--hanple-border);
+.wt-card-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 6px;
 }
 
-.list-simple li:last-child {
-  border-bottom: none;
-}
-
-.badge-status {
+.wt-card-status {
   font-size: 11px;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 999px;
+  background: #f3f5f9;
+  color: #333;
 }
 
-.badge-green {
-  background: var(--hanple-mint-light);
-  color: var(--hanple-mint);
+.wt-card-tag {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #eefbf9;
+  color: #2ac1bc;
 }
 
-.badge-gray {
-  background: #f0f0f0;
-  color: #777;
-}
-
-/* ========= 폼 ========= */
-
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.form-label {
-  font-size: 13px;
+.wt-card-title {
+  font-size: 14px;
   font-weight: 600;
+  margin-bottom: 6px;
 }
 
-.form-input,
-.form-textarea,
-.form-select {
-  padding: 9px 10px;
-  border-radius: var(--hanple-radius-md);
-  border: 1px solid var(--hanple-border);
-  font-size: 13px;
-  outline: none;
-  transition: var(--hanple-transition);
+.wt-card-row {
+  display: flex;
+  font-size: 12px;
+  margin-bottom: 2px;
 }
 
-.form-input:focus,
-.form-textarea:focus,
-.form-select:focus {
-  border-color: var(--hanple-mint);
-  box-shadow: 0 0 0 1px var(--hanple-mint-light);
+.wt-card-label {
+  width: 40px;
+  color: #888;
 }
 
-.form-textarea {
-  resize: vertical;
-  min-height: 80px;
+.wt-card-value {
+  flex: 1;
+  color: #333;
 }
 
-/* ========= 태그 ========= */
-
-.tag {
+.wt-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 11px;
-  padding: 3px 8px;
+  margin-top: 8px;
+  color: #888;
+}
+
+.wt-card-btn {
+  border: none;
+  padding: 4px 10px;
+  font-size: 11px;
   border-radius: 999px;
-  background: #f5f5f5;
-  color: #666;
+  background: #f3f5f9;
+  color: #333;
+  cursor: pointer;
+}
+
+/* 빈 상태 */
+.wt-empty {
+  margin-top: 20px;
+  font-size: 13px;
+  text-align: center;
+  color: #999;
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+  .wt-page {
+    padding: 12px 10px 24px;
+  }
+
+  .wt-header {
+    border-radius: 14px;
+  }
 }
