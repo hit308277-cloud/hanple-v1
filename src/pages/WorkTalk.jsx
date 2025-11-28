@@ -1,1 +1,0 @@
-export default function WorkTalk(){return(<div>업무톡</div>);}

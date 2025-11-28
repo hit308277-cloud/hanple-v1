@@ -1,1 +1,0 @@
-export default function Card({title,children,onClick}){return(<div onClick={onClick}><h3>{title}</h3>{children}</div>);}

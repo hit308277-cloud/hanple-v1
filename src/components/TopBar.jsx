@@ -1,1 +1,0 @@
-export default function TopBar(){return(<header><span>HANPLE</span></header>);}
